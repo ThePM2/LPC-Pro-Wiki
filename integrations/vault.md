@@ -1,4 +1,4 @@
-# Vault
+# 🏦 Vault
 
 LPC Pro integrates with [Vault](https://www.spigotmc.org/resources/vault.34315/) for economy and permission abstraction.
 

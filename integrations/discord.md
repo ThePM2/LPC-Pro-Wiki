@@ -1,4 +1,4 @@
-# Discord Integration
+# 💜 Discord Integration
 
 LPC Pro can bridge chat between your Minecraft server and Discord channels using webhooks and/or DiscordSRV. Configuration is in `integration/discord.yml`.
 

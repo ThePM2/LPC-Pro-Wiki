@@ -1,4 +1,4 @@
-# Main Configuration
+# 📝 Main Configuration
 
 The main configuration file is `config.yml`, located in `plugins/LPC-Pro/`. It controls global plugin settings and hook toggles.
 

@@ -1,4 +1,4 @@
-# Tab List
+# 📋 Tab List
 
 LPC Pro can customize the tab list (player list) header and footer with dynamic information, placeholders, and animations. Configuration is in `features/tablist.yml`.
 

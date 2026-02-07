@@ -1,4 +1,4 @@
-# Groups
+# 👥 Groups
 
 Groups allow you to apply different chat settings per rank tier — different cooldowns, message lengths, color permissions, and moderation bypasses. Configuration is in `advanced/groups.yml`.
 

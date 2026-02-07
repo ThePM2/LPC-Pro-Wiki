@@ -1,4 +1,4 @@
-# Anti-Bot
+# 🕵️ Anti-Bot
 
 The anti-bot system protects against chat bots and spam accounts by enforcing cooldowns after joining and detecting bot-like behavior. Configuration is in `moderation/antibot.yml`.
 

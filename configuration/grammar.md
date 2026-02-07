@@ -1,4 +1,4 @@
-# Grammar Correction
+# ✏️ Grammar Correction
 
 LPC Pro can automatically apply basic grammar corrections to chat messages, such as capitalizing the first letter and adding a period at the end. This creates a cleaner chat experience without manual enforcement.
 

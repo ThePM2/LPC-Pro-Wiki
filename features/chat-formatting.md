@@ -1,4 +1,4 @@
-# Chat Formatting & Colors
+# 🎨 Chat Formatting & Colors
 
 LPC Pro provides rich text formatting support for chat messages, including legacy color codes, MiniMessage tags, hex colors, and gradients.
 

@@ -1,4 +1,4 @@
-# Warnings
+# ⚠️ Warnings
 
 The warning system lets staff issue formal warnings to players. Warnings accumulate and can trigger automatic actions (mute, kick, ban) at configurable thresholds.
 

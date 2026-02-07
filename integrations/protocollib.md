@@ -1,4 +1,4 @@
-# ProtocolLib
+# 📡 ProtocolLib
 
 LPC Pro integrates with [ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) for packet-level message manipulation, enabling features like message deletion and message interception.
 

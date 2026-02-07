@@ -1,4 +1,4 @@
-# Initial Setup
+# 🔧 Initial Setup
 
 After [installing](installation.md) LPC Pro, follow this guide to get your server's chat configured.
 

@@ -1,4 +1,4 @@
-# Macros
+# ⚡ Macros
 
 Macros are pre-defined message templates that staff and players can send with a single command. LPC Pro supports both global macros (shared by all staff) and personal macros (per player).
 

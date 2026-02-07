@@ -1,4 +1,4 @@
-# Chat Shop
+# 🛒 Chat Shop
 
 LPC Pro includes a built-in cosmetics shop where players can spend currency on chat colors, name colors, tags, and perks. Configuration is in `features/shop.yml`.
 

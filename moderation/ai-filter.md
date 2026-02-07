@@ -1,4 +1,4 @@
-# AI Filter
+# 🤖 AI Filter
 
 The AI filter uses OpenAI's API to analyze chat messages for toxicity. It can work as a real-time filter or in post-hoc moderation mode where flagged messages are sent to the [Moderation Queue](mod-queue.md) for staff review.
 

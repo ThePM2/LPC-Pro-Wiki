@@ -1,4 +1,4 @@
-# Developer API
+# 🧑‍💻 Developer API
 
 LPC Pro v2 includes a public API module for third-party plugin developers to integrate with.
 

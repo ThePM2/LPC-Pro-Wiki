@@ -1,4 +1,4 @@
-# Proxy / Network Support
+# 🌐 Proxy / Network Support
 
 LPC Pro supports cross-server communication for BungeeCord and Velocity networks. When enabled, chat messages, private messages, mutes, and announcements can be synchronized across all servers. Configuration is in `integration/proxy.yml`.
 

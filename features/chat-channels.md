@@ -1,4 +1,4 @@
-# Chat Channels
+# 📺 Chat Channels
 
 LPC Pro supports multiple chat channels, allowing players to separate conversations by purpose (global, local, staff, trade, help) or create custom channels. Configuration is in `chat/channels.yml`.
 

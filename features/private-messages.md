@@ -1,4 +1,4 @@
-# Private Messages
+# ✉️ Private Messages
 
 LPC Pro provides a full private messaging system with customizable formats, ignore lists, and staff spy functionality.
 

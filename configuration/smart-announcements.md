@@ -1,4 +1,4 @@
-# Smart Announcements
+# 📣 Smart Announcements
 
 Smart announcements are context-aware messages that trigger based on conditions like player count, playtime, permissions, or world. Unlike regular timed announcements, they only send when their conditions are met. Configuration is in `features/smart-announcements.yml`.
 

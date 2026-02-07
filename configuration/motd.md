@@ -1,4 +1,4 @@
-# MOTD (Message of the Day)
+# 👋 MOTD (Message of the Day)
 
 The MOTD system shows a welcome message to players when they join the server. It supports different messages for first-time players, returning players, and specific permission groups. Configuration is in `features/motd.yml`.
 

@@ -1,4 +1,4 @@
-# Anti-Spam
+# ⏱️ Anti-Spam
 
 The anti-spam filter prevents message flooding by enforcing a cooldown between messages and detecting repeated/similar messages. Configuration is in `moderation/moderation.yml`.
 

@@ -1,4 +1,4 @@
-# Mail System
+# 📬 Mail System
 
 The mail system allows players to send messages to offline players. When the recipient logs in, they receive a notification with their unread mail. Configuration is in `features/mail.yml`.
 

@@ -1,4 +1,4 @@
-# Chat Translation
+# 🌐 Chat Translation
 
 LPC Pro can translate chat messages between languages using an external translation API. Configuration is in `translation.yml`.
 

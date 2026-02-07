@@ -1,4 +1,4 @@
-# Chat Formats
+# 💬 Chat Formats
 
 Chat formats control how messages appear in chat. Each format is a YAML file in the `formats/` folder, composed of **parts** — individual text segments with their own hover tooltips and click actions.
 

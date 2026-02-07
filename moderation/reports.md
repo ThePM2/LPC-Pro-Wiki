@@ -1,4 +1,4 @@
-# Reports
+# 🚩 Reports
 
 Players can report others for inappropriate behavior. Reports are reviewed by staff through a management interface.
 

@@ -1,4 +1,4 @@
-# Chat Games
+# 🎮 Chat Games
 
 LPC Pro includes chat games that challenge players with various game types. Games can run automatically on a schedule or be started manually by staff. Configuration is in `features/games.yml`.
 

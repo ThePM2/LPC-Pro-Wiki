@@ -1,4 +1,4 @@
-# Newcomer System
+# 🆕 Newcomer System
 
 The newcomer system provides special handling for new players, including a newcomer tag, welcome messages, slowmode restrictions, and mention limits. Configuration is in `features/newcomer.yml`.
 

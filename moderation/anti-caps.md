@@ -1,4 +1,4 @@
-# Anti-Caps
+# 🔠 Anti-Caps
 
 The anti-caps filter prevents excessive use of capital letters in chat messages. Configuration is in `moderation/moderation.yml`.
 

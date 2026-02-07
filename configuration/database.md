@@ -1,4 +1,4 @@
-# Database
+# 🗄️ Database
 
 LPC Pro stores player data, mutes, warnings, reputation, chat logs, and more in a database. Configuration is in `database.yml`.
 

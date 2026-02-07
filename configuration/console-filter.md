@@ -1,4 +1,4 @@
-# Console Filter
+# 🖥️ Console Filter
 
 The console filter suppresses unwanted messages from the server console output. This is useful for reducing log spam from plugins or repetitive system messages. Configuration is in `moderation/console-filter.yml`.
 

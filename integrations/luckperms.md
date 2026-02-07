@@ -1,4 +1,4 @@
-# LuckPerms
+# 🍀 LuckPerms
 
 LPC Pro integrates with [LuckPerms](https://luckperms.net/) for group detection, prefixes, and suffixes in chat formats.
 

@@ -1,4 +1,4 @@
-# Chat History & Search
+# 🔍 Chat History & Search
 
 LPC Pro logs chat messages and provides commands for staff to view history and search logs.
 

@@ -1,4 +1,4 @@
-# Mentions
+# 📌 Mentions
 
 Players can mention other players in chat using `@username` syntax, similar to Discord. Mentioned players receive a sound notification and see their name highlighted. Configuration is in `chat/mentions.yml`.
 

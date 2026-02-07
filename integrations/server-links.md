@@ -1,4 +1,4 @@
-# Server Links
+# 🔗 Server Links
 
 LPC Pro can add custom links to the ESC/Pause menu using Paper's ServerLinks API. This feature requires **Paper 1.21+**.
 

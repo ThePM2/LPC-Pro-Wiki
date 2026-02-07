@@ -1,4 +1,4 @@
-# Geyser & Floodgate
+# 🌉 Geyser & Floodgate
 
 LPC Pro integrates with [Geyser](https://geysermc.org/) and [Floodgate](https://wiki.geysermc.org/floodgate/) to detect Bedrock players and adapt the chat experience accordingly.
 

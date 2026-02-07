@@ -1,4 +1,4 @@
-# Nicknames
+# ✨ Nicknames
 
 Players can set custom nicknames that display in chat, private messages, and hover tooltips instead of their real username.
 

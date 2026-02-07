@@ -1,4 +1,4 @@
-# Infractions
+# 📈 Infractions
 
 The infraction system is an internal point-based tracking system for moderation. When chat filters detect violations, infraction points are automatically assigned. Points accumulate and trigger actions at configurable thresholds. Configuration is in `moderation/moderation.yml`.
 

@@ -1,4 +1,4 @@
-# Anti-Advertising
+# 🚫 Anti-Advertising
 
 The anti-advertising filter blocks URLs, IP addresses, and domains from being posted in chat. Configuration is in `moderation/moderation.yml`.
 

@@ -1,4 +1,4 @@
-# Content Filter
+# 📄 Content Filter
 
 The content filter extends LPC Pro's chat moderation to non-chat content: signs, books, and anvil item renames. It reuses the same filters configured in `moderation/moderation.yml` (swear filter, anti-advertising, etc.). Configuration is in `moderation/content-filter.yml`.
 

@@ -1,4 +1,4 @@
-# Commands & Permissions
+# ⌨️ Commands & Permissions
 
 Complete reference of all LPC Pro commands and permissions.
 

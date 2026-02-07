@@ -1,4 +1,4 @@
-# Placeholders
+# 🔤 Placeholders
 
 LPC Pro provides two types of placeholders: **built-in placeholders** for use in chat format files, and **PlaceholderAPI placeholders** for use in other plugins.
 

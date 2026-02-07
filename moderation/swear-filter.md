@@ -1,4 +1,4 @@
-# Swear Filter
+# 🤬 Swear Filter
 
 The swear filter detects and blocks profanity in chat messages. It includes automatic evasion detection for leet speak, repeated characters, and separator characters. Configuration is in `moderation/moderation.yml`.
 

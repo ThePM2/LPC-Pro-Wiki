@@ -1,4 +1,4 @@
-# Server Messages
+# 📢 Server Messages
 
 Server messages control join, quit, death messages, automatic announcements, and chat clearing. Configuration is in `features/servermessages.yml`.
 

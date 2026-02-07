@@ -1,4 +1,4 @@
-# Chat Bubbles
+# 💭 Chat Bubbles
 
 Chat bubbles display player messages as floating text above their heads using TextDisplay entities. Requires Paper 1.19.4+.
 

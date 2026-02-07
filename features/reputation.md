@@ -1,4 +1,4 @@
-# Reputation
+# 👍 Reputation
 
 The reputation system lets players give karma points to other players, with leaderboards and cooldowns. Configuration is in `features/reputation.yml`.
 

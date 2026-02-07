@@ -1,4 +1,4 @@
-# Offline Messages
+# 📥 Offline Messages
 
 LPC Pro can queue private messages for offline players and deliver them when they next log in. Configuration is in `features/offlinemessages.yml`.
 

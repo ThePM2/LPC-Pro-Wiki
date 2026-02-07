@@ -1,4 +1,4 @@
-# ViaVersion
+# 🔀 ViaVersion
 
 LPC Pro integrates with [ViaVersion](https://www.spigotmc.org/resources/viaversion.19254/) to detect which Minecraft client version each player is using.
 

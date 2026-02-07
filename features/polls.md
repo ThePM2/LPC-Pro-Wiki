@@ -1,4 +1,4 @@
-# Polls
+# 📊 Polls
 
 LPC Pro includes an in-chat polling system. Staff can create polls with multiple options, and players vote by clicking in chat. Configuration is in `features/polls.yml`.
 

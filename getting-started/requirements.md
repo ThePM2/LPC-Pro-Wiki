@@ -1,4 +1,4 @@
-# Requirements
+# 📋 Requirements
 
 Before installing LPC Pro v2, make sure your server meets the following requirements.
 

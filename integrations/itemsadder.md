@@ -1,4 +1,4 @@
-# ItemsAdder
+# 🖼️ ItemsAdder
 
 LPC Pro integrates with [ItemsAdder](https://www.spigotmc.org/resources/itemsadder.73355/) to allow players to use custom emojis in chat messages.
 

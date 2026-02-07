@@ -1,4 +1,4 @@
-# Moderation Overview
+# 🛡️ Moderation Overview
 
 LPC Pro includes a comprehensive moderation suite for keeping your server chat clean and safe. All moderation features are configured in `moderation/moderation.yml` unless noted otherwise.
 

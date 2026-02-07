@@ -1,4 +1,4 @@
-# Muting
+# 🔇 Muting
 
 LPC Pro supports three types of mutes: player mutes, channel mutes, and server-wide mutes. All mutes support optional durations and are persisted in the database.
 

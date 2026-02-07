@@ -1,4 +1,4 @@
-# Oraxen
+# ⛏️ Oraxen
 
 LPC Pro integrates with [Oraxen](https://www.spigotmc.org/resources/oraxen.72448/) to allow players to use custom glyphs in chat messages.
 

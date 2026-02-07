@@ -1,4 +1,4 @@
-# Raid Protection
+# 🚨 Raid Protection
 
 Raid protection automatically activates when an abnormal number of players join in a short time window, helping protect against bot raids and mass-join attacks. Configuration is in `moderation/raidprotection.yml`.
 

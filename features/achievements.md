@@ -1,4 +1,4 @@
-# Achievements
+# 🏆 Achievements
 
 The achievement system rewards players for chat milestones like message counts, mentions, replies, reputation, and poll participation. Configuration is in `features/achievements.yml`.
 

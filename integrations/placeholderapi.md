@@ -1,4 +1,4 @@
-# PlaceholderAPI
+# 🧩 PlaceholderAPI
 
 LPC Pro integrates with [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) in two ways: it **consumes** PAPI placeholders in chat formats, and it **provides** its own placeholders for other plugins to use.
 

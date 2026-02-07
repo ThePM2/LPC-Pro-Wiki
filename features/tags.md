@@ -1,4 +1,4 @@
-# Tags
+# 🏷️ Tags
 
 Tags are cosmetic labels displayed in chat next to a player's name. Tags can be earned through achievements, purchased from the chat shop, or automatically assigned based on staff permissions.
 

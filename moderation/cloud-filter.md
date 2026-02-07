@@ -1,4 +1,4 @@
-# Cloud Filter
+# ☁️ Cloud Filter
 
 The cloud filter fetches word lists from remote sources and uses them to filter chat messages. This allows you to use community-maintained or centralized word lists that update automatically. Configuration is in `moderation/cloud-filter.yml`.
 

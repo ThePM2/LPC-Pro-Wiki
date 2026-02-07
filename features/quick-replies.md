@@ -1,4 +1,4 @@
-# Quick Replies
+# 💨 Quick Replies
 
 Quick replies let players save frequently used messages and send them with a short command. Configuration is in `features/quickreply.yml`.
 

@@ -1,4 +1,4 @@
-# Moderation Queue
+# 👁️ Moderation Queue
 
 The moderation queue lets staff review flagged messages before they appear in chat. Messages caught by filters or the AI filter can be held for manual approval.
 
