@@ -83,7 +83,7 @@ Ignore lists are persisted in the database and survive server restarts.
 
 ### Ignore Bypass
 
-Players with `lpcpro.command.ignore.bypass` can send messages to players who have ignored them. This is useful for staff members.
+`lpcpro.command.ignore.bypass` prevents players from newly ignoring that target while the target is online and the permission can be checked. It does not override an already saved ignore at delivery time, and it does not bypass the recipient's PM or DND preference.
 
 ## Staff Spy
 
@@ -91,7 +91,7 @@ Staff members can spy on private messages:
 
 | Permission | Description |
 |---|---|
-| `lpcpro.spy.pm` | See all private messages on the server |
+| `lpcpro.spy.pm` | Access `/spy` to enable private-message spy |
 | `lpcpro.spy.bypass` | Your messages won't be seen by spies |
 
 ## Do Not Disturb
@@ -101,7 +101,20 @@ Players can toggle Do Not Disturb mode to temporarily stop receiving private mes
 | Command | Permission | Description |
 |---|---|---|
 | `/dnd` | `lpcpro.dnd` | Toggle Do Not Disturb mode |
+| `/dnd on` / `/dnd off` | `lpcpro.dnd` | Set DND explicitly |
+| `/dnd message <message>` | `lpcpro.dnd` | Save your DND auto-reply |
+
+`/toggle pm` controls PM receiving separately. PMs are on and DND is off by default. Preferences and the DND auto-reply are saved. If recipient settings or ignore data are still loading, LPC Pro asks the sender to try again rather than delivering without those checks.
 
 ## Moderation
 
 Private messages are subject to the swear filter when `filter-private-messages: true` is set in `moderation/moderation.yml`.
+
+
+## Offline Players and Other Chat Plugins
+
+`/msg Steve Hello!` uses the real account name, not a cosmetic nickname. If Steve is offline and the [Offline Messages](offline-messages.md) feature is enabled, the message can be queued for the next eligible login. A vanished player is not exposed to a sender without vanish access.
+
+If another plugin owns `/msg`, check `override-conflicting-commands` in `config.yml`. LPC Pro's default takeover list includes PM, reply, ignore and mail labels; other plugins' namespaced commands stay available. You can also address LPC Pro's command through `/lpcpro:msg` when it is registered.
+
+Ignore lists affect both private and local channel delivery. Saving an ignore is acknowledged only when its database update succeeds. Staff spy must be switched on with `/spy`; possession of the permission alone is not a claim that a message was displayed to a staff client.

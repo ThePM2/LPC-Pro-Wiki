@@ -1,79 +1,90 @@
 # 👋 MOTD (Message of the Day)
 
-The MOTD system shows a welcome message to players when they join the server. It supports different messages for first-time players, returning players, and specific permission groups. Configuration is in `features/motd.yml`.
+The MOTD is an **in-game welcome message** shown after joining, not the multiplayer server-list description. Configure it in `features/motd.yml`.
 
 ## Configuration
 
+First set `enable-motd: true` in `config.yml` and restart. In `features/motd.yml`, enable the welcome message as well:
+
 ```yaml
 enabled: true
-
-# Delay before showing MOTD (ticks, 20 = 1 second)
-delay-ticks: 40
-
-# Permission to receive MOTD
-permission: "lpcpro.motd"
+delay-ticks: 20
+show-player-head: false
+permission: ""
+default:
+  - "<gold>Welcome back, <white>{player}</white>!"
+  - "<gray>Online: <white>{online}/{max}</white>"
+first-join:
+  - "<green>Welcome to the server, <white>{player}</white>!"
+groups:
+  "lpcpro.motd.staff":
+    - "<red>Welcome back, staff member <white>{player}</white>."
 ```
+
+This is an opt-in example. Defaults are `enabled: false`, `delay-ticks: 20`, `show-player-head: true`, and `permission: ""`. The top-level `enable-motd` switch also defaults to `false`. A tick is 1/20 second at normal server speed.
+
+An empty `permission` lets everyone receive the message. Set a node such as `lpcpro.motd` only if you want an explicit permission gate. `show-player-head` enables the optional head display; set it to `false` for simple full-width text.
 
 ## Default MOTD
 
-Shown to returning players who don't match any group:
-
-```yaml
-default:
-  - ""
-  - "<gradient:gold:yellow>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient>"
-  - ""
-  - "  <gold>Welcome back, <white>{player}<gold>!</gold>"
-  - ""
-  - "  <gray>Online players: <white>{online}/{max}</white>"
-  - ""
-  - "  <aqua>/help</aqua> <gray>- View commands"
-  - "  <aqua>/rules</aqua> <gray>- View server rules"
-  - "  <aqua>/discord</aqua> <gray>- Join our Discord"
-  - ""
-  - "<gradient:gold:yellow>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</gradient>"
-  - ""
-```
+The `default` list is used when no first-join or permission entry applies. Each list item is a formatted message line. Built-in placeholders and available PlaceholderAPI expansions are supported.
 
 ## First Join MOTD
 
-Shown only on a player's very first join:
+`first-join` is a **list of lines**, not an `enabled/messages` section. A non-empty list takes precedence for a first-time player; an empty list leaves normal selection available.
 
 ```yaml
 first-join:
-  enabled: true
-  messages:
-    - "<rainbow>Welcome to the server, {player}!</rainbow>"
-    - "<gray>Take a moment to read our <aqua>/rules</aqua>"
+  - "<rainbow>Welcome, {player}!</rainbow>"
+  - "<gray>Enjoy your first visit."
 ```
 
 ## Group-Specific MOTDs
 
-Show different MOTDs based on permission:
+Keys under `groups` are permission nodes, and values are lists. Entries are checked in file order; the first permitted entry wins after the first-join check.
 
 ```yaml
 groups:
-  staff:
-    permission: "lpcpro.motd.staff"
-    messages:
-      - "<red>Welcome back, Staff Member <white>{player}</white>!"
-      - "<gray>Online players: <white>{online}/{max}</white>"
-
-  vip:
-    permission: "lpcpro.motd.vip"
-    messages:
-      - "<gold>Welcome back, VIP <white>{player}</white>!</gold>"
-      - "<gray>Thanks for supporting the server!"
+  "lpcpro.motd.staff":
+    - "<red>Welcome back, {player}!"
+  "lpcpro.motd.vip":
+    - "<gold>Thanks for supporting the server, {player}!"
 ```
 
-Groups are checked in order — the first matching group is used. If no group matches, the default MOTD is shown.
+The built-in `lpcpro.motd.vip` entry is deliberately skipped for operators so their general permission access does not automatically select that VIP greeting.
+
+## Join Titles
+
+An optional title is configured separately inside the same file:
+
+```yaml
+join-title:
+  enabled: true
+  delay-ticks: 60
+  fade-in: 10
+  stay: 60
+  fade-out: 20
+  default:
+    title: "<gold>Welcome back!"
+    subtitle: "<gray>Enjoy your stay, {player}"
+  first-join:
+    enabled: true
+    title: "<green>Welcome to the server!"
+    subtitle: "<gray>We're glad you're here, {player}"
+  groups:
+    "lpcpro.motd.staff":
+      title: "<red>Welcome back, staff!"
+      subtitle: "<gray>Hello, {player}"
+```
+
+Titles require the main `config.yml` `enable-motd` switch to be on. Within `features/motd.yml`, `join-title.enabled` controls titles independently of the welcome-text `enabled` setting. `join-title.enabled` defaults to `false`; its timing fields are ticks. Supported edits within this feature file can be reloaded with `/lpc reload`.
 
 ## Placeholders
 
 | Placeholder | Description |
 |---|---|
-| `{player}` | Player name |
+| `{player}` | Account name |
 | `{displayname}` | Player display name |
 | `{online}` | Online player count |
-| `{max}` | Max player count |
-| `{world}` | Player's world name |
+| `{max}` | Maximum player count |
+| `{world}` | Player's current world |

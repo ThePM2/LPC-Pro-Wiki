@@ -2,84 +2,68 @@
 
 ## Step 1: Download
 
-Download the latest `lpcpro-bukkit-v2-X.X.X.jar` file.
+Download your LPC Pro release JAR, for example `LPC-Pro-2.6.0.jar`. Keep one LPC Pro JAR in the server's `plugins/` directory.
 
 ## Step 2: Install the Plugin
 
-1. Stop your server.
-2. Place the `.jar` file into your server's `plugins/` folder.
-3. Start the server.
+1. Stop the server.
+2. Place the release JAR in `plugins/`.
+3. Install any optional providers you need, using versions compatible with your server.
+4. Start the server and check the LPC Pro startup log.
 
-LPC Pro will generate its configuration files on first startup:
+Runtime libraries may need to be downloaded on first startup. If startup fails, resolve the reported library or database error before continuing; a JAR being present is not proof that initialization succeeded.
 
-```
+LPC Pro organizes its files under `plugins/LPC-Pro/`:
+
+```text
 plugins/LPC-Pro/
-├── config.yml                          # Main settings
-├── database.yml                        # Database connection
-├── translation.yml                     # Chat translation
-├── chat/
-│   ├── channels.yml                    # Chat channels
-│   ├── colors.yml                      # Color settings
-│   ├── emojis.yml                      # Emoji settings
-│   ├── grammar.yml                     # Grammar correction
-│   ├── bubbles.yml                     # Chat bubbles
-│   ├── mentions.yml                    # @mention settings
-│   └── tags.yml                        # Chat tags
-├── moderation/
-│   ├── moderation.yml                  # Filter settings (spam, caps, ads, swear)
-│   ├── content-filter.yml              # Content filter (signs/books/anvil)
-│   ├── ai-filter.yml                   # AI content moderation
-│   ├── cloud-filter.yml                # Cloud-based filter
-│   ├── console-filter.yml              # Console output filter
-│   ├── antibot.yml                     # Anti-bot protection
-│   ├── raidprotection.yml              # Raid protection
-│   └── reports.yml                     # Report system
-├── features/
-│   ├── achievements.yml                # Chat achievements
-│   ├── games.yml                       # Chat games
-│   ├── mail.yml                        # Mail system
-│   ├── macros.yml                      # Chat macros
-│   ├── motd.yml                        # MOTD settings
-│   ├── newcomer.yml                    # New player handling
-│   ├── offlinemessages.yml             # Offline message settings
-│   ├── polls.yml                       # Polls
-│   ├── quickreply.yml                  # Quick reply shortcuts
-│   ├── reputation.yml                  # Rep system
-│   ├── servermessages.yml              # Join/quit/death messages
-│   ├── shop.yml                        # Chat shop / cosmetics
-│   ├── smart-announcements.yml         # Context-aware announcements
-│   ├── tablist.yml                     # Tab list header/footer
-│   └── custom-commands.yml             # Custom commands
-├── integration/
-│   ├── discord.yml                     # Discord integration
-│   ├── proxy.yml                       # Proxy/network settings
-│   └── server-links.yml                # Server links
-├── advanced/
-│   ├── groups.yml                      # Rank-based settings
-│   ├── variables.yml                   # Custom variables
-│   ├── command-settings.yml            # Command settings
-│   ├── message-interceptor.yml         # Message interception
-│   └── message-deletion.yml            # Message deletion
-└── formats/                            # Chat format templates
-    ├── chat.yml
-    ├── msg-sender.yml
-    ├── msg-receiver.yml
-    ├── staff-chat.yml
-    └── groups/                         # Group-specific formats
+├── config.yml                         # Main switches and hooks
+├── database.yml                       # Storage connection
+├── translation.yml                    # Requested text translation
+├── messages.json                      # Player-facing text
+├── chat/                              # channels, colors, emojis, grammar,
+│                                      # bubbles, mentions, tags, sounds,
+│                                      # settings, public-replies
+├── moderation/                        # moderation, AI/cloud/content filters,
+│                                      # console filter, anti-bot, raids, reports
+├── features/                          # games, shop, guis, mail, offline messages,
+│                                      # profiles' supporting cosmetics, newcomer,
+│                                      # MOTD, tablist, polls, reputation,
+│                                      # achievements, logging and announcements
+├── integration/                       # discord.yml, proxy.yml, server-links.yml
+├── advanced/                          # groups, variables, command settings/spy,
+│                                      # interception and deletion settings
+├── formats/                           # chat.yml, msg-sender.yml,
+│   └── groups/                        # msg-receiver.yml, staff-chat.yml, ranks
+├── data/                              # Feature-owned durable records
+├── cache/                             # Bounded identity/provider caches
+└── style-editor/backups/               # Previous saved format bytes
 ```
 
-## Step 3: Install Optional Plugins
+The comments abbreviate file names: for example channels are in `chat/channels.yml`, the shop is in `features/shop.yml`, and variables are in `advanced/variables.yml`. Some files are created by their feature manager. Use the path on each feature page rather than creating a second root-level copy.
 
-Install any optional dependencies you want to use (see [Requirements](requirements.md)). LPC Pro automatically detects installed plugins and enables their integrations.
+## Step 3: Check the Installation
+
+As an administrator, run:
+
+```text
+/lpc info
+/lpc status
+/lpc diagnose
+```
+
+`/lpc` requires `lpcpro.admin`. Diagnostics explain the selected channel and format without broadcasting a test message. A feature can be initialized while its own optional `enabled` setting remains off.
 
 ## Step 4: Configure
 
-Edit the generated configuration files to match your server's needs. See the [Configuration](../configuration/main-config.md) section for details.
+Follow [Initial Setup](initial-setup.md) for your first visible chat style. Keep only one plugin responsible for formatting the same public chat event. On a genuinely new LPC Pro installation, supported EssentialsChat layouts may be imported automatically with a backup; see [Updating & Recovery](updating.md#first-install-import).
 
-## Step 5: Reload
+## Step 5: Apply Changes
 
-After editing configuration files, use `/lpc reload` to apply changes without restarting the server.
+Use `/lpc reload` for supported file changes and check its response and `/lpc status` afterward.
 
 {% hint style="warning" %}
-The `database.yml` file does **not** support reloading. Changes to database settings require a full server restart.
+Changing any top-level `enable...` switch in `config.yml`, or the database connection, requires a full server restart. Reload keeps the running feature switches until then. Replace a plugin JAR with the server stopped; do not use a general-purpose plugin hot-loader.
 {% endhint %}
+
+Already using LPC Pro? Follow [Updating & Recovery](updating.md) before replacing it.

@@ -47,10 +47,11 @@ death:
 | `{player}` | Name of the player who died |
 | `{killer}` | Name of the killer (PvP) |
 | `{mob}` | Name of the mob that killed the player |
+| `{weapon}` | Weapon for supported player kills, including projectile kills where Bukkit exposes the shooter |
 
 ## Automatic Announcements
 
-Periodic announcements broadcast to the server:
+Automatic announcements are **disabled** and their message list is empty on fresh installations. This optional example enables periodic broadcasts:
 
 ```yaml
 announcements:
@@ -79,3 +80,7 @@ clearchat:
 |---|---|
 | `{player}` | Staff member who cleared chat |
 | `{reason}` | Reason provided (line is auto-removed if no reason given) |
+
+## Applying Changes
+
+Run `/lpc reload` after editing. For conditional announcements use [Smart Announcements](smart-announcements.md); for a private in-game welcome use [MOTD](motd.md). These are separate from ordinary channel chat and its public-chat receiving preference.

@@ -6,8 +6,8 @@ The reputation system lets players give karma points to other players, with lead
 
 | Command | Description | Permission |
 |---|---|---|
-| `/rep <player>` | Give +1 reputation to a player | `lpcpro.rep.give` |
-| `/rep view <player>` | View a player's reputation | `lpcpro.rep.view` |
+| `/rep <player>` | Give configured reputation points (default +1) | `lpcpro.rep.give` |
+| `/rep view [player]` | View your own or a known player's reputation | `lpcpro.rep.view` |
 | `/rep top` | View the reputation leaderboard | `lpcpro.rep.top` |
 
 ## Configuration
@@ -64,7 +64,7 @@ notifications:
 | `lpcpro.rep.give` | `true` | Give reputation to others |
 | `lpcpro.rep.view` | `true` | View reputation |
 | `lpcpro.rep.top` | `true` | View leaderboard |
-| `lpcpro.rep.bypass.cooldown` | `false` | Bypass rep cooldown |
+| `lpcpro.rep.bypass.cooldown` | — | Bypass rep cooldown |
 
 ## Achievements
 
@@ -73,3 +73,19 @@ Reputation milestones can unlock achievements (configured in `features/achieveme
 - **Respected** — Reach 10 reputation
 - **Beloved** — Reach 50 reputation
 - **Community Idol** — Reach 100 reputation
+
+
+## Giving Reputation
+
+Both `enable-reputation` in `config.yml` and `enabled` in this file must be on. The aliases are `/reputation` and `/+rep`. Every subcommand needs the base `lpcpro.rep` node as well as its action permission. These action nodes and the cooldown bypass can be customized under `permissions:` in `features/reputation.yml`.
+
+```text
+/rep Steve
+/rep view
+/rep view Steve
+/rep top
+```
+
+The target must be a known player who has joined before. By default you cannot give reputation to yourself, you need one hour of recorded playtime to give it, and you must wait 24 hours before giving it to the same player again. A different target has a separate cooldown. The command awards the configured `points-per-rep`; it is not a command for entering an arbitrary positive or negative amount.
+
+Points and cooldown writes use database storage. A rejected or failed update does not get a successful reputation acknowledgement. Run `/lpc reload` after editing the feature file; changing `enable-reputation` requires a restart.

@@ -1,78 +1,53 @@
 # ☁️ Cloud Filter
 
-The cloud filter fetches word lists from remote sources and uses them to filter chat messages. This allows you to use community-maintained or centralized word lists that update automatically. Configuration is in `moderation/cloud-filter.yml`.
+The cloud filter downloads word lists and combines them with your local words and patterns. It is configured separately from the local swear filter in `moderation/cloud-filter.yml`.
 
 ## Configuration
 
+The bundled configuration enables English, Spanish, and German lists:
+
 ```yaml
-enabled: false
-
-# Automatically update word lists
+enabled: true
 auto-update: true
-
-# Update frequency (hours)
 update-interval-hours: 24
-
-# Cache word lists locally
 use-local-cache: true
-
-# Case-sensitive matching
 case-sensitive: false
-
-# Remote word list URLs
-wordlist-urls: []
-
-# Custom regex patterns
+wordlist-urls:
+  - "https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/en"
+  - "https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/es"
+  - "https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/de"
 custom-patterns: []
-
-# Additional words to add locally
 additional-words: []
 ```
 
 ## How It Works
 
-1. On startup (and at each update interval), LPC Pro fetches word lists from the configured URLs
-2. Downloaded lists are cached locally for reliability
-3. All words from remote lists, custom patterns, and additional words are combined
-4. Chat messages are checked against the combined filter
+Enabled normal/content moderation censors matches from the combined list. Downloads do not upload player messages. `enabled: false` stops cloud filtering and refresh requests.
 
-## Key Settings
+Each URL has its own cache. Removing a URL removes its words after reload. If a refresh fails, only that source's previous data and success time are retained. Old merged `cloud-filter-cache.txt` files are not imported; an upgrade from that format needs a successful refresh for remote words.
 
-| Setting | Default | Description |
-|---|---|---|
-| `auto-update` | `true` | Fetch updated lists periodically |
-| `update-interval-hours` | `24` | How often to refresh lists |
-| `use-local-cache` | `true` | Keep a local copy in case remote sources are down |
-| `case-sensitive` | `false` | Whether matching is case-sensitive |
+{% hint style="info" %}
+`swear-filter.enabled` and `lpcpro.bypass.filter` control the local swear filter, not this separate cloud stage. Configure or disable the cloud filter independently. Normal private messages do not use this cloud stage.
+{% endhint %}
 
 ## Adding Word Lists
 
-Add URLs to `wordlist-urls` to fetch external lists:
-
-```yaml
-wordlist-urls:
-  - "https://example.com/badwords-en.txt"
-  - "https://example.com/badwords-es.txt"
-```
-
-Each URL should return a plain text file with one word per line.
+Use HTTPS URLs that return plain text with one word per line. There can be at most 32 sources, with a limit of 4 MiB and 20,000 words per source. Keep the existing URLs when adding another list if you want to retain their words.
 
 ## Custom Patterns
 
-Add regex patterns for advanced matching:
-
 ```yaml
 custom-patterns:
-  - "b[o0][t|+]"
-  - "sc[a@]m"
+  - 'sc[a@]m'
 ```
+
+Patterns use Java regular expressions. Up to 100 patterns are accepted, each no longer than 512 characters. Start with a small list and check for unintended matches.
 
 ## Local Additions
 
-Add words directly without a remote source:
-
 ```yaml
 additional-words:
-  - "badword1"
-  - "badword2"
+  - "exampleblockedword"
 ```
+
+Run `/lpc reload` after changes and use `/lpc status` to inspect cloud health. Remote list availability is independent of LPC Pro.

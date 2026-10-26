@@ -17,9 +17,9 @@ LPC Pro includes chat games that challenge players with various game types. Game
 
 | Command | Aliases | Description | Permission |
 |---|---|---|---|
-| `/chatgame start [type]` | `/cgame`, `/game` | Start a chat game (optionally specify type) | `lpcpro.game.start` |
-| `/chatgame stop` | — | Stop the current game | `lpcpro.game.start` |
-| `/chatgame random` | — | Start a random game | `lpcpro.game.start` |
+| `/chatgame start [type]` | `/cgame`, `/game` | Start a game (defaults to `math`) | `lpcpro.game.play` + `lpcpro.game.start` |
+| `/chatgame stop` | — | Stop the current game | `lpcpro.game.play` + `lpcpro.game.start` |
+| `/chatgame random` | — | Start a random game | `lpcpro.game.play` + `lpcpro.game.start` |
 | `/chatgame stats` | — | View your game statistics | `lpcpro.game.play` |
 | `/chatgame top` | — | View the leaderboard | `lpcpro.game.play` |
 
@@ -78,9 +78,16 @@ Customize game messages with MiniMessage formatting:
 
 ```yaml
 messages:
-  game-start: "<gold><bold>Chat Game!</bold></gold> <yellow>Unscramble this word: <white>{word}</white></yellow>"
+  game-start:
+    math: "<gold><bold>MATH</bold></gold> <yellow>Solve: <white>{problem} = ?</white></yellow>"
+    unscramble: "<aqua><bold>UNSCRAMBLE</bold></aqua> <yellow>Unscramble: <white>{word}</white></yellow>"
+    trivia: "<light_purple><bold>TRIVIA</bold></light_purple> <white>{question}</white>"
+    reverse: "<green><bold>REVERSE</bold></green> <white>{word}</white>"
+    type_race: "<yellow><bold>TYPE RACE</bold></yellow> <white>{phrase}</white>"
+    emoji_guess: "<light_purple><bold>EMOJI GUESS</bold></light_purple> <white>{category}: {emoji}</white>"
   game-win: "<green>{player}</green> <yellow>won the chat game! The answer was:</yellow> <white>{answer}</white>"
   game-timeout: "<red>Time's up!</red> <yellow>The answer was:</yellow> <white>{answer}</white>"
+  cancelled: "<red>Game cancelled.</red>"
   already-running: "<red>A game is already in progress!</red>"
 ```
 
@@ -90,3 +97,16 @@ messages:
 |---|---|---|
 | `lpcpro.game.play` | `true` | Participate in games and view stats |
 | `lpcpro.game.start` | `op` | Start and stop games manually |
+
+
+## Playing and Receiving Games
+
+Both `enable-chat-games` in `config.yml` and `enabled` in `features/games.yml` must be on. The main switch requires a restart; edit the schedule, rewards or message templates and run `/lpc reload`.
+
+For a quick manual game, use `/chatgame start math`, then type the answer in ordinary chat. The first accepted correct answer wins. Only one game runs at a time. `auto-game-interval-minutes: 0` stops automatic games while keeping manual games available.
+
+Players can hide game broadcasts through `/toggle games` when receiving controls are enabled. This is separate from private messages and ordinary chat. Title timing can be configured with `title.enabled`, `title.fade-in`, `title.stay` and `title.fade-out`; the shipped values are `true`, `5`, `60` and `10` ticks.
+
+The `messages.game-start` section uses one entry per game type. Keep placeholders with their matching template: math uses `{problem}`, trivia uses `{question}`, type race uses `{phrase}`, emoji guess uses `{category}` and `{emoji}`, and word games use `{word}`. The YAML above is an example design, not a replacement for the full word list or generated messages.
+
+Reward commands run from console. On Folia they remain blocked by default through `folia.allow-unsafe-console-commands`; enable that only for commands you have checked for Folia safety. A code path accepting a game type does not certify every client animation or sound.

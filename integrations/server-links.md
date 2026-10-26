@@ -1,43 +1,45 @@
 # 🔗 Server Links
 
-LPC Pro can add custom links to the ESC/Pause menu using Paper's ServerLinks API. This feature requires **Paper 1.21+**.
-
-## How It Works
-
-When a player opens the pause menu (ESC), custom links are displayed alongside the standard options. Players can click these links to open URLs in their browser.
+LPC Pro can add links to a compatible Minecraft client's pause menu using the server's ServerLinks API. This needs a server exposing the 1.21+ API; both Paper and Spigot API paths are supported when the required methods are available.
 
 ## Configuration
 
-Server links are configured in `integration/server-links.yml`:
+Settings are in `integration/server-links.yml`:
 
 ```yaml
 enabled: true
+links:
+  - type: "CUSTOM"
+    label: "Our Website"
+    url: "https://example.com"
+  - type: "COMMUNITY_GUIDELINES"
+    url: "https://example.com/rules"
+  - type: "SUPPORT"
+    url: "https://example.com/staff-help"
+    permission: "lpcpro.staff"
 ```
+
+Replace example URLs with your own. `CUSTOM` is supported and uses `label` as literal display text. Standard types use the client's translated label.
 
 ## Link Types
 
-LPC Pro supports the following built-in link types from Paper's `ServerLinks.Type` enum:
-
 | Type | Description |
 |---|---|
-| `REPORT_BUG` | Bug report link |
-| `COMMUNITY_GUIDELINES` | Community rules link |
-| `SUPPORT` | Support/help link |
-| `STATUS` | Server status page |
-| `FEEDBACK` | Feedback form |
-| `NEWS` | News page |
-| `ANNOUNCEMENTS` | Announcements page |
+| `CUSTOM` | Your own label |
+| `REPORT_BUG` | Bug report |
+| `COMMUNITY_GUIDELINES` | Community rules |
+| `SUPPORT` | Help/support |
+| `STATUS` | Service status |
+| `FEEDBACK` | Feedback |
+| `NEWS` | News |
+| `ANNOUNCEMENTS` | Announcements |
 
-{% hint style="warning" %}
-The `CUSTOM` type is not a valid built-in link type. Links configured with type `CUSTOM` will be silently ignored. To add links with custom labels, use one of the built-in types above.
-{% endhint %}
+Available standard types depend on the server API. Unknown types or unavailable API methods do not add a link.
 
 ## Per-Link Permissions
 
-Each link can require a permission to be visible. This allows showing different links to different player groups (e.g., staff-only links for admin panels).
+Omit `permission` for a public link. Set a permission to show it only to eligible players when their links are applied. A hidden link is not an access-control system for the destination website itself.
 
-## Requirements
+## Reloading
 
-{% hint style="warning" %}
-Server Links require **Paper 1.21+**. This feature uses reflection for compatibility and will not be available on Spigot or older Paper versions.
-{% endhint %}
+`/lpc reload` reloads the configured links. They are applied when players join; reconnect to see the new list. Older clients, translated connections, and servers without the API may not display these menu entries.

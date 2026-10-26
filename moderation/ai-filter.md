@@ -1,6 +1,6 @@
 # 🤖 AI Filter
 
-The AI filter uses OpenAI's API to analyze chat messages for toxicity. It can work as a real-time filter or in post-hoc moderation mode where flagged messages are sent to the [Moderation Queue](mod-queue.md) for staff review.
+The AI filter analyzes accepted chat in the background. It can alert staff without taking action, or apply post-hoc moderation after a matching result. AI is optional and disabled by default.
 
 ## Configuration
 
@@ -8,62 +8,103 @@ The AI filter is configured in `moderation/ai-filter.yml`:
 
 ```yaml
 enabled: false
+backend: "chat-completions"
+mode: "enforce"
+api-key: "your-api-key-here"
+model: "gpt-5.6-terra"
+api-endpoint: "https://api.openai.com/v1/chat/completions"
+request-profile: "auto"
 
-# OpenAI API key (required)
-api-key: ""
+standard-safety:
+  model: "omni-moderation-latest"
+  api-endpoint: "https://api.openai.com/v1/moderations"
+  categories:
+    - "harassment"
+    - "harassment/threatening"
+    - "hate"
+    - "hate/threatening"
+    - "sexual/minors"
 
-# AI model to use
-model: "gpt-3.5-turbo"
-
-# Toxicity score threshold (0.0 - 1.0)
-# Messages scoring above this are flagged
-toxicity-threshold: 0.7
-
-# API request timeout (seconds)
 timeout-seconds: 5
-
-# Translation cache settings
+toxicity-threshold: 0.7
+block-toxic: false
+log-analysis: false
+max-requests-per-minute: 30
+cache-size: 1000
 cache-ttl-minutes: 30
 
-# Rate limiting
-max-requests-per-minute: 30
-
-# Post-hoc moderation mode
 post-hoc-moderation:
-  enabled: false
-  auto-delete-messages: false
-  auto-learn-words: false
+  enabled: true
+  notify-staff: true
+  penalty-cooldown-seconds: 30
+  auto-delete-messages: true
+  auto-learn-words: true
+  auto-learn-threshold: 0.9
+  auto-learn-min-word-length: 4
+  auto-learn-min-occurrences: 3
+  auto-learn-max-per-day: 10
 ```
+
+## Getting Started
+
+1. Add an API key for your chosen provider and check that the configured model is available to that account.
+2. Set `enabled: true` and `mode: "observe"` for an initial trial.
+3. Leave `post-hoc-moderation.enabled: true`, run `/lpc reload`, and check `/lpc status`.
+4. Review the `[AI Observe]` staff alerts before choosing `mode: "enforce"`.
+
+Provider billing, quotas, model availability, and response quality are managed by the provider. LPC Pro does not guarantee a correct verdict for every message.
 
 ## Modes
 
-### Real-Time Filtering
+### Observe
 
-With `post-hoc-moderation.enabled: false`, messages are analyzed before being sent to chat. Messages exceeding the toxicity threshold are blocked.
+`mode: "observe"` analyzes messages, updates usage/cache information, and can notify staff with `lpcpro.admin` or `lpcpro.mod`. It does not delete messages, add infractions, warn players, propose blocked words, or change penalty cooldowns. Your local anti-spam, swear, and other filters still apply.
+
+### Enforce
+
+`mode: "enforce"` can delete a tracked message after a matching result, notify staff, warn the sender, and add [infraction points](infractions.md). The default penalty cooldown is 30 seconds per player. Messages may still be deleted during that cooldown even when another infraction is not added.
 
 {% hint style="warning" %}
-Real-time filtering adds latency to every chat message due to the API call. Consider using post-hoc mode for better player experience.
+AI moderation is post-hoc: players may see accepted chat before the result arrives. API errors, timeouts, quota limits, and a full request queue allow messages through. Message deletion depends on a tracked message and is unavailable on Folia. AI does not automatically send messages to the [Moderation Queue](mod-queue.md).
 {% endhint %}
 
-### Post-Hoc Moderation
+Setting `post-hoc-moderation.enabled: false` stops this analysis path. It does not enable a real-time blocking mode. The legacy `block-toxic` setting should not be used as a pre-send protection switch.
 
-With `post-hoc-moderation.enabled: true`, messages are sent to chat immediately and analyzed afterward. Flagged messages are sent to the [Moderation Queue](mod-queue.md) for staff review.
+## Backends
 
-| Setting | Description |
+| Backend | How a message matches |
 |---|---|
-| `auto-delete-messages` | Automatically delete messages that exceed the threshold |
-| `auto-learn-words` | Add frequently flagged words to the swear filter automatically |
+| `chat-completions` | The model returns a toxicity decision and score, checked against `toxicity-threshold` |
+| `standard-safety` | The Moderations-compatible response flags one of the selected `standard-safety.categories` |
 
-## Key Settings
+To use the standalone Moderations protocol, set `backend: "standard-safety"`. It uses the nested model/endpoint and the same `api-key`. It does not use `toxicity-threshold`, learn words, or fall back to Chat Completions on failure. The default selected categories do not include ordinary gameplay violence or requests for help.
 
-| Setting | Default | Description |
-|---|---|---|
-| `toxicity-threshold` | `0.7` | Score threshold (lower = more strict) |
-| `max-requests-per-minute` | `30` | API rate limit to control costs |
-| `cache-ttl-minutes` | `30` | Cache identical messages to reduce API calls |
-| `model` | `gpt-3.5-turbo` | OpenAI model to use |
+### Custom Providers
 
-## Requirements
+`request-profile: "auto"` uses the Terra request format only for the built-in Terra model at the official OpenAI Chat Completions endpoint. Other endpoints/models retain the legacy compatible request format.
 
-- An OpenAI API key with billing enabled
-- Network access from your Minecraft server to the OpenAI API
+Use `legacy-chat` to select the legacy request fields explicitly. `openai-terra` selects the Terra request contract for a compatible endpoint and requires `model: "gpt-5.6-terra"`. A compatible HTTP route alone does not guarantee that a provider supports the required response format.
+
+## Word Suggestions
+
+Despite its retained name, `auto-learn-words` only proposes candidates for staff review. It does not add words automatically. This applies to Chat Completions in Enforce mode; Observe and Standard Safety do not create suggestions.
+
+| Command | Description |
+|---|---|
+| `/lpc ai suggestions` | List candidates that meet the occurrence threshold |
+| `/lpc ai approve <word>` | Add a reviewed candidate to the local swear filter |
+| `/lpc ai reject <word>` | Reject a candidate |
+
+These commands require both `lpcpro.admin` and `lpcpro.ai.review`. A high sentence-level score does not establish that every word in the sentence should be blocked.
+
+## Limits and Privacy
+
+The default global limit is 30 requests per minute, with a separate limit of five per player and one outstanding request per player. Two calls can run while 64 wait. Responses are limited to 256 KiB, and identical results are cached for 30 minutes by default. `/lpc status` shows the active backend/mode and health counters.
+
+`log-analysis: false` hides full message content in the AI analysis log/alert path and AI infraction reasons. It does not disable separate logging: a successful automatic deletion still writes the original message to the server log, and configured chat history has its own policy. Use Observe mode or disable `post-hoc-moderation.auto-delete-messages` if that deletion-log behavior is unsuitable for your setup.
+
+An enabled provider still receives the analyzed text. Keep API keys private. Players with `lpcpro.bypass.aifilter` skip this analysis path. Normal chat and enabled sign/book/anvil filtering can submit analysis; private messages use the local swear filter rather than this AI path.
+
+## Updating an Existing Profile
+
+Recognized retired built-in GPT-3.5 defaults at the official endpoint migrate to the Terra model when the request profile is automatic. An exact backup is saved alongside the file as `ai-filter.yml.pre-terra-<id>.bak` before an atomic replacement. Custom endpoints/models, explicit legacy profiles, API keys, enabled state, and enforcement choices are preserved. Review the startup log and `/lpc status` after updating.

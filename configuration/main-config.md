@@ -1,67 +1,108 @@
 # 📝 Main Configuration
 
-The main configuration file is `config.yml`, located in `plugins/LPC-Pro/`. It controls global plugin settings and hook toggles.
+`plugins/LPC-Pro/config.yml` controls global feature switches, hooks, command ownership, and display settings. Feature-specific files are organized in the folders described in [Installation](../getting-started/installation.md).
 
 ## Default Configuration
 
+These main settings are generated from the current configuration class:
+
 ```yaml
-# Check for plugin updates on startup.
 check-for-updates: true
-
-# After editing these settings, the server must be restarted for the changes to take effect.
+update-notify-console: true
+update-notify-join: true
 enable-private-messages: true
-# If private messages are enabled, ignoring messages will also be enabled, even if it is set to false.
 enable-ignore-messages: true
-
-# Plugin integrations - enable/disable hooks for other plugins
+enable-tags: true
+enable-auto-tag: true
+enable-mentions: true
+enable-reputation: true
+enable-polls: true
+enable-achievements: true
+enable-chat-games: true
+enable-motd: false
+enable-tab-list: true
+enable-chat-bubbles: true
+enable-translation: true
+enable-discord: true
+enable-mail: true
+enable-grammar: true
+enable-name-color: true
+use-group-formats: true
+strip-unresolved-placeholders: false
+strip-unauthorized-color-codes: true
+folia:
+  allow-unsafe-console-commands: false
 hooks:
-  # Enable ItemsAdder integration for custom emojis (:emoji:) and font images in chat
   items-adder: true
-  # Enable PlaceholderAPI integration for %placeholder% support
   placeholder-api: true
-  # Enable Oraxen integration for custom glyphs (:glyph:) in chat
   oraxen: true
-  # Enable ViaVersion integration for client version detection
+  nexo: true
   via-version: true
-  # Enable Geyser/Floodgate integration for Bedrock player detection
   geyser: true
-  # Enable ProtocolLib integration for message interception and deletion
   protocol-lib: true
-  # Enable vanish integration (SuperVanish, PremiumVanish, Essentials)
   vanish: true
 ```
 
+This is a settings excerpt, not a replacement for your complete generated file. Keep the other sections, including command ownership and `/lpc info` formatting.
+
 ## Settings Reference
 
-### General
+| Setting | What It Controls |
+|---|---|
+| `check-for-updates` | Startup update check; console and join notifications have separate switches |
+| `enable-private-messages` / `enable-ignore-messages` | PM/ignore features; PMs also need ignoring enabled internally |
+| `enable-tags` | All manual and automatic chat tags |
+| `enable-auto-tag` | Permission-selected automatic tags; disabling this leaves manual tags available |
+| Other `enable...` settings | Whether the corresponding manager/commands are initialized; the feature's own file may also require `enabled: true` |
+| `enable-name-color` | Access to changing name color; already saved name colors remain applied |
+| `use-group-formats` | Use primary-group format files; reloadable independently of the top-level `enable...` settings |
+| `strip-unresolved-placeholders` | Strip unresolved `%placeholder%` text rather than leaving it visible |
+| `strip-unauthorized-color-codes` | Remove unauthorized message color codes; `false` leaves those codes as literal text |
+| `folia.allow-unsafe-console-commands` | Opt-in dispatch of configured console/reward commands on Folia |
 
-| Key | Type | Default | Description |
-|---|---|---|---|
-| `check-for-updates` | boolean | `true` | Check for new plugin versions on startup |
-| `enable-private-messages` | boolean | `true` | Enable `/msg` and `/reply` commands |
-| `enable-ignore-messages` | boolean | `true` | Enable `/ignore` command (auto-enabled when PMs are on) |
+## Hooks
 
-### Hooks
+Hooks default to `true`, but the matching provider must actually be installed and available. Setting a hook to `true` does not install it.
 
-All hooks are under the `hooks:` section. Only enable hooks for plugins you have installed.
+| Key | Integration |
+|---|---|
+| `items-adder`, `oraxen`, `nexo` | The provider's custom font/glyph syntax |
+| `placeholder-api` | External PlaceholderAPI expansions |
+| `via-version` | Client version detection |
+| `geyser` | Genuine Geyser/Floodgate Bedrock detection and supported forms |
+| `protocol-lib` | Supported outgoing message interception |
+| `vanish` | Supported vanish providers/metadata |
 
-| Key | Plugin | Description |
-|---|---|---|
-| `items-adder` | ItemsAdder | Custom emoji replacement (`:emoji:`) |
-| `placeholder-api` | PlaceholderAPI | `%placeholder%` support in formats |
-| `oraxen` | Oraxen | Custom glyph replacement (`:glyph:`) |
-| `via-version` | ViaVersion | Client version detection |
-| `geyser` | Geyser + Floodgate | Bedrock player detection |
-| `protocol-lib` | ProtocolLib | Message deletion and interception |
-| `vanish` | SuperVanish / PremiumVanish / Essentials | Hide vanished players from chat, mentions, PMs |
+See the [integration guides](../integrations/placeholderapi.md) for provider requirements. Install or remove provider plugins with a server restart.
 
-{% hint style="warning" %}
-Changes to `enable-private-messages` and `enable-ignore-messages` require a **server restart** because commands are registered dynamically on startup.
-{% endhint %}
+## Command Conflicts
+
+LPC Pro claims selected contested command labels by default:
+
+```yaml
+override-conflicting-commands:
+  enabled: true
+  commands:
+    - msg
+    - m
+    - tell
+    - t
+    - whisper
+    - w
+    - r
+    - reply
+    - mail
+    - email
+    - ignore
+    - unignore
+```
+
+Set `enabled: false` to leave contested labels with the other plugin. Removing a label returns it on `/lpc reload`; a single `"*"` entry allows all labels registered by LPC Pro to be claimed. The other plugin's namespaced command remains available. See [Command Customization](command-customization.md) before renaming commands or changing their permissions.
+
+## Info Command Layout
+
+`info-command` is a list of MiniMessage lines. It supports `{version}`, `{server_version}`, `{java_version}`, `{db_type}`, `{db_status}`, `{features}`, `{hooks}`, `{online}`, and `{max_players}`. `info-feature-format.enabled/disabled` and `info-hook-format.active/inactive` control the inserted status lines.
 
 ## Reloading
 
-Most configuration changes can be applied with `/lpc reload`. Exceptions:
-
-- `enable-private-messages` / `enable-ignore-messages` — Require restart
-- `database.yml` — Requires restart
+`/lpc reload` applies supported file changes and reports failures. **All top-level `enable...` switches keep their running values until a full restart.** Database connection settings also require restart. Check `/lpc status` afterward; an initialized manager is not proof that its own service is enabled or healthy.

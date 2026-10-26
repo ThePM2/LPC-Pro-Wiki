@@ -1,26 +1,18 @@
 # 📈 Infractions
 
-The infraction system is an internal point-based tracking system for moderation. When chat filters detect violations, infraction points are automatically assigned. Points accumulate and trigger actions at configurable thresholds. Configuration is in `moderation/moderation.yml`.
-
-{% hint style="info" %}
-This is a **staff-only internal system**, separate from the player-facing reputation system. Players cannot see their infraction points.
-{% endhint %}
+Infractions are internal moderation points from AI enforcement and repeated local swear-filter violations. They are separate from player [reputation](../features/reputation.md) and manual [warnings](warnings.md).
 
 ## Configuration
+
+The `infractions` section is in `moderation/moderation.yml`:
 
 ```yaml
 infractions:
   enabled: true
-
-  # Days until infractions expire (0 = never)
   default-expiry-days: 7
-
-  # Points per infraction source
   points:
     ai-filter: 2
     swear-filter: 1
-
-  # Automatic actions at point thresholds
   thresholds:
     mute:
       enabled: true
@@ -37,28 +29,27 @@ infractions:
 
 ## How It Works
 
-1. A player triggers a chat filter (swear filter, AI filter, etc.)
-2. Infraction points are added based on the `points:` configuration
-3. If the player's total active points reach a threshold, an automatic action is triggered
-4. Infractions expire after `default-expiry-days` days
-
-## Point Sources
-
-| Source | Default Points | Description |
+| Source | Default Points | When it is added |
 |---|---|---|
-| `swear-filter` | 1 | Triggered by the swear/profanity filter |
-| `ai-filter` | 2 | Triggered by the AI content filter |
+| `swear-filter` | 1 | Three tracked local swear violations within two minutes |
+| `ai-filter` | 2 | A matching AI verdict in Enforce mode, outside the penalty cooldown |
 
-## Threshold Actions
+Not every cancelled message creates an infraction. Spam, caps, advertising, and cloud-only censorship do not independently use these point sources. Observe mode never awards AI points.
 
-| Action | Default Points | Description |
-|---|---|---|
-| Mute | 5 | Automatically mute the player |
-| Kick | 10 | Kick the player from the server |
-| Ban | 15 | Temporarily ban the player |
+When active points cross a threshold upward, the highest applicable enabled action runs: mute at five, kick at ten, or ban at fifteen by default. Kicks have no duration setting. `lpcpro.infractions.bypass` exempts an online player from these automatic threshold actions; it does not mean that no record can be stored.
 
-Each threshold action can be individually enabled/disabled and configured with a duration.
+## Commands
 
-## Expiration
+These in-game staff commands require `lpcpro.infractions`:
 
-Infractions expire after `default-expiry-days` days. Set to `0` to make infractions permanent. This allows players to gradually recover from minor offenses.
+| Command | Description |
+|---|---|
+| `/infractions <player>` | View active records and points |
+| `/infractions top` | List players with the most active points |
+| `/infractions history <player>` | Include expired records |
+| `/infractions remove <player> #<id>` | Remove one record by its displayed ID |
+| `/infractions clear <player>` | Clear that player's records |
+
+## Expiration and Storage
+
+Records expire after `default-expiry-days`; `0` means no expiry. Expired records no longer count toward active points but can be reviewed in history. Records are stored in `data/infractions.json` and retained across quit/rejoin and normal server restarts. Back up this file along with the database and other plugin data.

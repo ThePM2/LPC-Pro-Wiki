@@ -19,7 +19,7 @@ Raid protection automatically activates when an abnormal number of players join 
 1. LPC Pro monitors the join rate and message patterns
 2. When thresholds are exceeded, **raid mode** activates automatically
 3. During raid mode, new players are restricted and slowmode is applied
-4. Raid mode deactivates automatically after the configured duration
+4. Automatic activations expire after the configured duration; staff can also turn mode off
 5. Staff can also toggle raid mode manually
 
 ## Configuration
@@ -45,6 +45,13 @@ raid-mode-duration: 300
 # Slowmode delay during raid mode (seconds)
 slowmode-delay: 5
 
+# Messages allowed through the raid/chat-shutdown restriction
+chat-shutdown:
+  allowed-messages:
+    - "welcome"
+    - "welcome back"
+    - "wb"
+
 # Trusted players bypass raid mode restrictions (UUIDs)
 trusted-players: []
 ```
@@ -61,11 +68,14 @@ Raid mode activates automatically when any of these conditions are met:
 
 ## During Raid Mode
 
-- New players are auto-muted (cannot chat)
-- Slowmode is applied to all players (configurable delay)
-- Staff are notified of the detection
-- All new joins are logged
-- Trusted players bypass restrictions
+- Players considered new by the raid manager can be temporarily blocked from chat.
+- A separate raid slowmode delay is applied alongside any manual delay.
+- Staff alerts and current trust/bypass checks apply.
+- Disabling raid protection clears its own restrictions and delay while preserving manually set slowmode.
+
+The raid manager tracks how recently the player joined its current session. This is separate from persistent newcomer graduation. Rejoining starts a new session for this tracking.
+
+Allowed messages are exact text by default; a trailing `*` allows a prefix, for example `welcome *`. Other filters and access rules may still reject the message. `/lpc reload` reloads the raid policy.
 
 ## Permissions
 
@@ -73,3 +83,4 @@ Raid mode activates automatically when any of these conditions are met:
 |---|---|
 | `lpcpro.raidmode` | Toggle raid protection and manage trusted list |
 | `lpcpro.raidmode.bypass` | Bypass raid mode restrictions |
+| `lpcpro.staff.alert` | Receive raid alerts |

@@ -12,8 +12,8 @@ The `/mute` command handles all mute types through subcommands:
 |---|---|---|
 | `/mute <player> [duration] [reason]` | Mute a player (shorthand) | `lpcpro.mute` |
 | `/mute player <player> [duration] [reason]` | Mute a player | `lpcpro.mute` |
-| `/mute channel <channel> [duration] [reason]` | Mute a chat channel | `lpcpro.mute.channel` |
-| `/mute server [duration] [reason]` | Mute all server chat | `lpcpro.mute.server` |
+| `/mute channel <channel> [duration] [reason]` | Mute a chat channel | `lpcpro.mute` + `lpcpro.mute.channel` |
+| `/mute server [duration] [reason]` | Mute all server chat | `lpcpro.mute` + `lpcpro.mute.server` |
 
 ### Unmute Command
 
@@ -23,14 +23,14 @@ The `/unmute` command mirrors the same structure:
 |---|---|---|
 | `/unmute <player>` | Unmute a player (shorthand) | `lpcpro.mute` |
 | `/unmute player <player>` | Unmute a player | `lpcpro.mute` |
-| `/unmute channel <channel>` | Unmute a channel | `lpcpro.mute.channel` |
-| `/unmute server` | Unmute server chat | `lpcpro.mute.server` |
+| `/unmute channel <channel>` | Unmute a channel | `lpcpro.mute` + `lpcpro.mute.channel` |
+| `/unmute server` | Unmute server chat | `lpcpro.mute` + `lpcpro.mute.server` |
 
 ### View Mutes
 
 | Command | Description | Permission |
 |---|---|---|
-| `/mutes <player>` | View a player's mute history | `lpcpro.mute.view` |
+| `/mutes [player]` | View your own history, or name another player | `lpcpro.mute.view` |
 
 ## Duration Format
 
@@ -45,7 +45,7 @@ Durations use a shorthand format:
 | `w` | Weeks | `2w` |
 | `perm` | Permanent | `perm` |
 
-Omitting the duration creates a permanent mute.
+Omitting the duration creates a permanent mute. To supply a reason for a permanent mute, write `perm` before the reason, for example `/mute Steve perm Repeated advertising`. `/mute` and `/unmute` also accept console senders; `/mutes` is an in-game history command.
 
 ## Examples
 
@@ -63,7 +63,7 @@ Omitting the duration creates a permanent mute.
 
 ### Player Mute
 
-Prevents a specific player from sending chat messages. Muted players can still use commands.
+Prevents a specific player from sending normal chat and LPC private messages/replies. It does not block every command supplied by other plugins.
 
 ### Channel Mute
 

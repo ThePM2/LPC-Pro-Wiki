@@ -35,10 +35,10 @@ When a player sends a message, they must wait `message-delay` seconds before sen
 
 ### Similarity Detection
 
-LPC Pro compares each new message against the player's last `similarity-check-count` messages. If any comparison exceeds the `similarity-threshold` percentage, the message is flagged as spam.
+LPC Pro compares each new message against the player's last `similarity-check-count` messages. If any comparison reaches the `similarity-threshold` percentage, the message is flagged as spam.
 
 For example, with the default settings:
-- "Can someone help me?" followed by "Can someone help me please?" (very similar) would be blocked
+- "Can someone help me?" followed by "Can someone help me!!!" has identical normalized text and is blocked by similarity even after waiting out the normal delay
 - "Hello" followed by "How is everyone?" (very different) would pass
 
 ## Actions
@@ -47,7 +47,8 @@ Available actions when spam is detected:
 
 | Action | Description |
 |---|---|
-| `CANCEL` | Silently cancel the message (only sender sees it) |
+| `CANCEL` | Block the message |
+| `SILENT_CANCEL` | Show the sender a local copy while hiding it from normal recipients |
 | `WARN` | Send the player a warning message |
 
 Multiple actions can be combined.
@@ -56,4 +57,6 @@ Multiple actions can be combined.
 
 **Permission:** `lpcpro.bypass.spam` (default: `op`)
 
-Players with this permission skip the spam filter.
+Players with this permission skip both the normal cooldown and similarity check. `lpcpro.bypass.cooldown.partial` reduces the normal delay without bypassing similarity checks. Eligible shop perks can also reduce that normal delay; raid, newcomer, and slowmode restrictions remain separate.
+
+Use `/lpc reload` after changes. The normal chat anti-spam history is not used for private messages or sign/book/anvil content checks.

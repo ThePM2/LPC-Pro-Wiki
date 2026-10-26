@@ -4,89 +4,75 @@
 
 ### How do I reload the plugin?
 
-Use `/lpc reload` to reload all configuration files. Note that `database.yml` changes and private message toggles require a full server restart.
+Use `/lpc reload` with `lpcpro.admin`, then check `/lpc status`. Supported format and feature-file edits reload, but **all top-level `enable...` switches** in `config.yml` and database connection settings require a full server restart. Replace JARs with the server stopped. See [Updating & Recovery](getting-started/updating.md).
 
 ### Chat format changes aren't showing up
 
-1. Make sure you edited the correct format file in `formats/`
-2. Run `/lpc reload`
-3. If using group-specific formats, check that the file name in `formats/groups/` matches the player's LuckPerms/Vault primary group name
+Run `/lpc diagnose Steve global` for the affected online player and channel. An available explicit channel format wins over a primary-group format, followed by the generic `chat` fallback. Check `use-group-formats`, duplicate file basenames, and reload errors. A saved personal chat color can override the format's base color. See [Chat Formats](configuration/chat-formats.md).
+
+### Does a design preview change everyone's chat?
+
+No. The gallery and editor preview only send a private sample. Staging a design is still an unsaved draft; **Save and apply** changes the selected format after creating a backup. Closing a normal editor view discards an unsaved draft. Use [Chat Style Editor](features/chat-style-editor.md) for restore and conflict rules.
+
+### What does a player style profile save?
+
+A profile saves personal chat color, name color, and selected tag. It does not save a nickname, rank, permissions, or a server layout. Switching rechecks current access. See [Player Style Profiles](features/player-style-profiles.md).
 
 ### PlaceholderAPI placeholders show as raw text
 
-1. Verify PlaceholderAPI is installed and running: `/papi list`
-2. Check that `placeholder-api: true` is set in `config.yml` under `hooks:`
-3. Make sure you're using `%placeholder%` syntax (not `{placeholder}`)
-4. Some placeholders require additional expansion downloads: `/papi ecloud download <expansion>`
+1. Check PlaceholderAPI is installed and `hooks.placeholder-api: true` in `config.yml`.
+2. Use `%placeholder%` syntax for external expansions.
+3. Install the required expansion if the provider needs one, then reload PlaceholderAPI as its documentation instructs.
+4. Check [Placeholders](placeholders.md) for the actual LPC Pro placeholder names and Folia limits.
+
+`strip-unresolved-placeholders: true` hides unresolved text; it does not install a missing expansion or fix its data source.
 
 ### Players can't use colors in chat
 
-Color permissions are controlled in two places:
-
-1. **advanced/groups.yml** — Set `can-use-colors: true` for the group
-2. **Individual permissions** — Grant `lpcpro.color.<color>` or `lpcpro.color.*`
-
-### The swear filter is too aggressive / not aggressive enough
-
-- **Too aggressive**: Remove words from the `blocked-words` list in `moderation/moderation.yml`
-- **Not aggressive enough**: Add more words to the list. Evasion detection (leet speak, separators, repeated chars) is automatic for every listed word.
+Template formatting, `/color` cosmetics, and formatting typed into a message use different permissions. Check the relevant nodes in [Chat Formatting & Colors](features/chat-formatting.md). The legacy `can-use-colors` field in `advanced/groups.yml` does not grant those permissions.
 
 ### How do I disable a feature?
 
-Most features have an `enabled:` toggle in their config file:
+Use its documented feature switch, and the top-level switch if one exists. Restart after changing a top-level `enable...` setting. Do not delete a file to disable a feature: its manager may recreate defaults.
 
-| Feature | File | Toggle |
+| Feature | File | Main Feature Setting |
 |---|---|---|
-| Anti-Spam | `moderation/moderation.yml` | `anti-spam.enabled` |
-| Anti-Caps | `moderation/moderation.yml` | `anti-caps.enabled` |
-| Anti-Advertising | `moderation/moderation.yml` | `anti-advertising.enabled` |
-| Swear Filter | `moderation/moderation.yml` | `swear-filter.enabled` |
-| Infractions | `moderation/moderation.yml` | `infractions.enabled` |
-| Achievements | `features/achievements.yml` | `enabled` |
-| Reputation | `features/reputation.yml` | `enabled` |
-| Polls | `features/polls.yml` | `enabled` |
-| Chat Games | `features/games.yml` | `enabled` |
-| Mail | `features/mail.yml` | `enabled` |
-| Tab List | `features/tablist.yml` | `enabled` |
-| Newcomer System | `features/newcomer.yml` | `enabled` |
-| Anti-Bot | `moderation/antibot.yml` | `enabled` |
-| Discord | `integration/discord.yml` | `enabled` |
-| Translation | `translation.yml` | `enabled` |
-| Offline Messages | `features/offlinemessages.yml` | `enabled` |
-| Smart Announcements | `features/smart-announcements.yml` | `enabled` |
-| MOTD | `features/motd.yml` | `enabled` |
-| Raid Protection | `moderation/raidprotection.yml` | `enabled` |
-| Shop | `features/shop.yml` | (remove file to disable) |
+| Anti-spam/caps/advertising/swear | `moderation/moderation.yml` | The corresponding section's `enabled` |
+| AI | `moderation/ai-filter.yml` | `enabled` |
+| Cloud word lists | `moderation/cloud-filter.yml` | `enabled` |
+| Public replies | `chat/public-replies.yml` | `enabled` |
+| Personal receiving controls | `chat/settings.yml` | `enabled`; `public-chat-channels` selects eligible public channel IDs |
+| Inventory/ender/shulker/coordinates | `advanced/variables.yml` | Their separate variable sections |
+| Newcomers | `features/newcomer.yml` | `enabled` |
+| Smart announcements | `features/smart-announcements.yml` | `enabled` |
+| Periodic announcements | `features/servermessages.yml` | `announcements.enabled` |
+| MOTD | `features/motd.yml` | `enabled`, plus `config.yml` `enable-motd` |
+| Discord | `integration/discord.yml` | `enabled`, plus `config.yml` `enable-discord` |
+
+Use each feature page for exact subordinate keys and dependencies.
 
 ### How do I change the default chat channel?
 
-Edit `chat/channels.yml`:
+Edit the existing `settings` section in `chat/channels.yml`:
 
 ```yaml
 settings:
-  default-channel: "global"  # Change to your preferred channel name
+  default-channel: "global"
 ```
 
-### How do I set up per-group chat formats?
+Use a valid channel defined in that file. Check [Chat Channels](features/chat-channels.md) for manual selection, automatic focus, access permissions, and invalid-channel handling.
 
-1. Create a format file at `formats/groups/<groupname>.yml`
-2. The file name must match the player's LuckPerms/Vault primary group name
-3. Use the same format structure as `formats/chat.yml`
-4. Run `/lpc reload`
+### Why can a player still see some messages after hiding public chat?
 
-### Private messages are disabled
+The public receiving setting applies only to the configured eligible unrestricted global channel. Private/local channels, PMs, staff tools, system notices, and other plugins' messages have their own paths. Game receiving preferences also leave personal rewards intact. See [Chat Settings](features/chat-settings.md).
 
-Check `config.yml`:
+### Why won't a public reply open?
 
-```yaml
-enable-private-messages: true
-```
+Public replies default to off and require managed deletion, an eligible local global source, current permissions, and a still-valid delivered-message action. They are unavailable on Folia. Do not copy another player's token or use an expired source. See [Public Replies](features/public-replies.md).
 
-This setting requires a **server restart** to take effect.
+### How do I allow my server's domain in chat?
 
-### How do I allow my server's IP/domain in chat?
-
-Add it to the allowed domains list in `moderation/moderation.yml`:
+Add the domain to the existing anti-advertising section in `moderation/moderation.yml`:
 
 ```yaml
 anti-advertising:
@@ -95,56 +81,62 @@ anti-advertising:
     - "discord.gg"
 ```
 
+Reload and test the intended message as a normal player. See [Anti-Advertising](moderation/anti-advertising.md) before broadly allowing shared host domains.
+
 ---
 
 ## Troubleshooting
 
 ### Plugin won't enable
 
-- Check your server console for error messages
-- Verify your Java version meets your server's requirements (`java -version`)
-- Verify you're running Paper or Spigot 1.17+
-- Check for conflicting plugins
+Read the first LPC Pro startup error. Check the [server and Java requirements](getting-started/requirements.md), a single installed LPC Pro JAR, required runtime library downloads, and database/schema access. Fix the underlying error rather than repeatedly hot-loading the plugin.
 
 ### Database connection failed
 
-- Verify your MySQL credentials in `database.yml`
-- Ensure the database exists with `utf8mb4_unicode_520_ci` collation
-- Check that your MySQL server is accessible from the Minecraft server
-- Try `type: local` (SQLite) to verify the issue is database-related
+Check the actual keys in [Database](configuration/database.md), connectivity, credentials, schema permissions, and UTF-8 support. Stop the server before changing storage mode or restoring data. Switching to an empty SQLite database can diagnose a connection issue in a **separate test copy**, but is not a migration of your existing records.
 
 ### Non-English characters appear garbled
 
-Add `-Dfile.encoding=UTF-8` to your server's startup flags:
+Keep edited files in UTF-8 and use a Unicode-capable database configuration. If an older Java environment uses another default encoding, set it when starting that test/server process:
 
-```bash
-java -Dfile.encoding=UTF-8 -jar server.jar
+```sh
+java -Dfile.encoding=UTF-8 -jar server.jar --nogui
 ```
 
-For MySQL, ensure the database uses `utf8mb4` character set.
+Keep your normal memory and startup arguments as well. A resource pack or client font problem is separate from file/database encoding.
 
-### Message deletion not working
+### Message deletion isn't working
 
-- Verify ProtocolLib is installed and up to date
-- Check that `protocol-lib: true` is set in `config.yml`
-- Verify the player has `lpcpro.chat.delete` permission
+Check [Message Deletion](moderation/message-deletion.md), its `advanced/message-deletion.yml` settings, the staff permission, and whether the source was stored by LPC Pro. ProtocolLib interception is a separate optional path; it does not make every packet or other plugin's message deletable. Folia disables managed deletion/replay.
 
-### Emojis / Glyphs not rendering
+### A shared inventory or shulker no longer opens
 
-- Verify ItemsAdder or Oraxen is installed
-- Check the corresponding hook is enabled in `config.yml`
-- Make sure emoji/glyph names match exactly (including case)
-- Don't enable both ItemsAdder and Oraxen simultaneously
+Shares are bounded snapshots with expiry, recipient checks, and source-session cleanup. Rejoining, reloading, disabling the feature, expiry, or capacity limits can invalidate them. Items cannot be taken from the viewer. Use [Inventory Sharing](features/inventory-sharing.md); Folia does not provide these viewers.
 
-### Getting "No permission" errors
+### Bedrock doesn't open the same chat actions as Java
 
-- Check that permission nodes match between your permission plugin and LPC Pro
-- Use `/lp user <player> permission check <permission>` to debug LuckPerms permissions
-- Review the [Commands & Permissions](commands-and-permissions.md) page for correct permission nodes
+Use `/chatmenu` for supported recent received-message actions and `/toggle menu` for settings on a genuine supported Geyser/Floodgate connection. Not every Java inventory menu is a native form. Check the provider's compatibility with the actual Bedrock version and transport. See [Geyser & Floodgate](integrations/geyser.md).
+
+### Emojis or glyphs aren't rendering
+
+Check the provider is installed, its hook is enabled, the exact glyph ID/syntax exists, and the client loaded the correct resource pack. ItemsAdder, Oraxen, and Nexo have different lookup behavior; multiple hooks are not a universal guarantee of interchangeable fonts. See their integration pages.
+
+### AI is unavailable or leaves messages visible
+
+AI is post-hoc, disabled by default, and permits messages when the provider is unavailable, queued beyond limits, or returns an unusable response. Observe deliberately performs no AI player punishment or deletion. Check `/lpc status`, endpoint/profile/backend, credentials, quotas, and the [AI guide](moderation/ai-filter.md). The moderation queue is not automatically populated by the normal AI pipeline.
+
+### Saved settings appear unavailable
+
+Check storage health in `/lpc status`. A loading/failed settings state is not a successful empty load. Resolve the storage problem and reconnect to reload durable settings; do not overwrite the database with guessed defaults.
+
+### A command belongs to another plugin
+
+Check LPC Pro's [command customization](configuration/command-customization.md) and `override-conflicting-commands` list. Verify the actual label/alias after reload and use the appropriate namespaced command while diagnosing a conflict.
+
+### Getting “No permission” errors
+
+Check both the command-level and action-specific nodes in [Commands & Permissions](commands-and-permissions.md). With LuckPerms, use `/lp user Steve permission check lpcpro.chatprofile` for a concrete effective permission check. Some runtime checks use nodes that have no declared default; grant those explicitly rather than assuming operator access.
 
 ### High memory usage or lag
 
-- If using SQLite, consider switching to MySQL for larger servers
-- Increase the tab list `update-interval-ticks` value to reduce update frequency
-- Disable features you don't use
-- Check that `auto-game-interval-minutes` isn't set too low
+Use `/lpc status` to check processing/delivery latency, storage queues, rejected writes, and provider health before changing settings. Review expensive placeholder expansions, enabled tasks, message rate, and audiences. Do not infer a player-capacity guarantee from a test count or assume that changing SQLite to MySQL alone fixes lag.

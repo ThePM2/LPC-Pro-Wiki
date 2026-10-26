@@ -6,7 +6,9 @@ The achievement system rewards players for chat milestones like message counts, 
 
 | Command | Description | Permission |
 |---|---|---|
-| `/achievements` | Open the achievements GUI (aliases: `/achieve`, `/ach`) | `lpcpro.achievements` |
+| `/achievements [player]` | Open your own or another player's achievements GUI (aliases: `/achieve`, `/ach`) | `lpcpro.achievements` |
+| `/achievements grant <player> <id>` | Grant an achievement to an online player | `lpcpro.achievements` + `lpcpro.achievements.admin` |
+| `/achievements revoke <player> <id>` | Remove an unlock for a known player | `lpcpro.achievements` + `lpcpro.achievements.admin` |
 
 ## Configuration
 
@@ -75,7 +77,7 @@ unlock-sound-pitch: 1.0
 
 ## Creating Custom Achievements
 
-Add entries under `achievements:` in `achievements.yml`:
+Add entries under `achievements:` in `features/achievements.yml`:
 
 ```yaml
 achievements:
@@ -84,7 +86,7 @@ achievements:
     description: "Send 2,500 messages"
     type: MESSAGE_COUNT
     threshold: 2500
-    reward-tag: "<gradient:gold:yellow>[Master]</gradient>"
+    reward-tag-id: "master"
     reward-commands:
       - "give {player} diamond 5"
       - "eco give {player} 1000"
@@ -98,7 +100,8 @@ achievements:
 | `description` | Yes | Description text |
 | `type` | Yes | Achievement type (see table above) |
 | `threshold` | Yes | Value needed to unlock |
-| `reward-tag` | No | MiniMessage-formatted tag granted on unlock |
+| `reward-tag` | No | Match a configured chat tag by its formatted value or label |
+| `reward-tag-id` | No | Exact tag ID from `chat/tags.yml` to unlock |
 | `reward-commands` | No | Commands to execute on unlock (`{player}` placeholder) |
 
 ## Placeholders
@@ -109,3 +112,16 @@ achievements:
 | `%lpcpro_achievements_unlocked%` | Unlocked count |
 | `%lpcpro_achievements_total%` | Total achievements |
 | `%lpcpro_achievements_percent%` | Unlock percentage (e.g., "33%") |
+
+
+## Rewards and Saved Progress
+
+Both `enable-achievements` in `config.yml` and `enabled` in this file must be enabled. The base command node is not explicitly defaulted for ordinary players; grant `lpcpro.achievements` in your permission plugin.
+
+To use `reward-tag-id: "master"` above, add a tag with ID `master` to `chat/tags.yml`. A reward unlocks access to a matching tag; it does not create a new tag definition or force it to replace the player's selected tag. Players choose unlocked tags through `/tags`.
+
+`reward-commands` run from console without a leading slash. The `eco` example requires your own economy plugin; `give` is a vanilla command. On Folia, configured console/reward commands remain blocked unless `folia.allow-unsafe-console-commands` is enabled and the commands are known to be safe for that server.
+
+Use `/achievements grant Steve chatterbox` for a quest reward. Repeating the grant is skipped once the achievement is already unlocked. `/achievements revoke Steve chatterbox` removes saved progress for that unlock, including for an offline player, but does not undo diamonds, money or other rewards already issued. IDs are the keys in the file, such as `chatterbox`, not display names.
+
+Achievement stats and unlocks are saved. If storage is unavailable, the command reports a failure rather than a successful unlock. Run `/lpc reload` after editing definitions.

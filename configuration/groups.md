@@ -1,140 +1,62 @@
 # 👥 Groups
 
-Groups allow you to apply different chat settings per rank tier — different cooldowns, message lengths, color permissions, and moderation bypasses. Configuration is in `advanced/groups.yml`.
+`advanced/groups.yml` defines LPC Pro's group detection and optional chat-prefix override. Your permission plugin still grants permissions, and primary-group **format selection** is handled separately.
 
 ## Detection Modes
 
-LPC Pro supports three ways to determine a player's group:
-
 | Mode | Description |
 |---|---|
-| `LUCKPERMS_GROUP` | Uses the player's primary LuckPerms group (recommended) |
-| `VAULT_GROUP` | Uses the player's primary Vault group |
-| `PERMISSION` | Checks for `lpcpro.group.<name>` permissions |
+| `LUCKPERMS_GROUP` | Match the LuckPerms primary group to a configured group |
+| `VAULT_GROUP` | Match the primary group supplied by the Vault chat provider |
+| `PERMISSION` | Use the first configured permission match, in descending priority |
 
-```yaml
-detection-mode: "LUCKPERMS_GROUP"
-```
-
-{% hint style="info" %}
-When using `LUCKPERMS_GROUP`, the group names in `advanced/groups.yml` must **exactly match** your LuckPerms group names.
-{% endhint %}
-
-## Default Settings
-
-Applied to players who don't match any group:
-
-```yaml
-default:
-  message-cooldown: 3      # Seconds between messages
-  command-cooldown: 1       # Seconds between commands
-  max-mentions: 3           # Max @mentions per message
-  max-message-length: 256   # Max characters per message
-  can-use-colors: false     # Use & color codes in chat
-  can-use-formatting: false # Use &l, &o, &n formatting
-  can-use-gradients: false  # Use gradient formatting
-  chat-prefix: ""           # Leave empty to use LuckPerms prefix
-```
-
-## Group Properties
-
-Each group supports these settings:
-
-| Property | Type | Description |
-|---|---|---|
-| `priority` | integer | Higher priority takes precedence (first match) |
-| `permission` | string | Permission node for PERMISSION detection mode |
-| `message-cooldown` | double | Seconds between messages (0 = no cooldown, supports decimals like `1.5`) |
-| `command-cooldown` | double | Seconds between commands (0 = no cooldown, supports decimals like `0.5`) |
-| `max-mentions` | integer | Max @mentions per message (-1 = unlimited) |
-| `max-message-length` | integer | Max characters per message (-1 = unlimited) |
-| `can-use-colors` | boolean | Allow `&` color codes in messages |
-| `can-use-formatting` | boolean | Allow bold, italic, etc. |
-| `can-use-gradients` | boolean | Allow gradient formatting |
-| `bypass-moderation` | boolean | Skip all chat filters (not currently enforced — use individual bypass permissions) |
-| `bypass-slowmode` | boolean | Ignore channel slowmode |
-| `bypass-mute` | boolean | Chat even when server is muted (not currently enforced — use `lpcpro.bypass.mute` permission) |
-| `chat-prefix` | string | Custom prefix (empty = use LuckPerms/Vault) |
-| `max-quick-replies` | integer | Max saved quick replies for this group (default: 5) |
-| `max-mail` | integer | Max mail messages in inbox for this group (default: 20) |
+The shipped file selects `LUCKPERMS_GROUP`. If a provider is unavailable or cannot produce a matching group, detection falls back to the configured permission rules and then the default group. Group-name matching is case-insensitive.
 
 ## Example Configuration
 
+This example uses permission-based detection and an explicit VIP prefix:
+
 ```yaml
+detection-mode: "PERMISSION"
+default:
+  chat-prefix: ""
 groups:
-  # Staff Groups
-  owner:
-    priority: 1000
-    permission: "lpcpro.group.owner"
-    message-cooldown: 0
-    command-cooldown: 0
-    max-mentions: -1
-    max-message-length: -1
-    can-use-colors: true
-    can-use-formatting: true
-    can-use-gradients: true
-    bypass-moderation: true
-    bypass-slowmode: true
-    bypass-mute: true
-    chat-prefix: ""
-
-  admin:
-    priority: 800
-    permission: "lpcpro.group.admin"
-    message-cooldown: 0
-    max-mentions: -1
-    max-message-length: 1000
-    can-use-colors: true
-    can-use-formatting: true
-    can-use-gradients: true
-    bypass-moderation: true
-
-  mod:
-    priority: 700
-    permission: "lpcpro.group.mod"
-    message-cooldown: 0
-    max-mentions: 15
-    max-message-length: 512
-    can-use-colors: true
-    can-use-formatting: true
-
-  # Donator Groups
-  mvp_plus:
-    priority: 400
-    permission: "lpcpro.group.mvpplus"
-    message-cooldown: 0
-    max-mentions: 10
-    max-message-length: 500
-    can-use-colors: true
-    can-use-formatting: true
-    can-use-gradients: true
-
   vip:
     priority: 250
     permission: "lpcpro.group.vip"
-    message-cooldown: 2
-    max-mentions: 5
-    max-message-length: 350
-    can-use-colors: true
-
-  # Regular Players
-  member:
-    priority: 100
-    permission: "lpcpro.group.member"
-    message-cooldown: 3
-    max-mentions: 3
-    max-message-length: 256
-    can-use-colors: false
+    chat-prefix: "<gold>[VIP]</gold> "
 ```
+
+Grant the permission in LuckPerms:
+
+```text
+/lp group vip permission set lpcpro.group.vip true
+```
+
+A non-empty `chat-prefix` overrides the prefix used in normal formatting. Leave it empty to use rank metadata from LuckPerms/Vault instead. Apply supported file edits with `/lpc reload`.
 
 ## Using with LuckPerms Prefixes
 
-Set `chat-prefix` to `""` (empty) for any group to use prefixes from LuckPerms instead:
+You can keep `chat-prefix: ""` and manage prefixes in LuckPerms:
 
-```bash
-/lp group owner meta setprefix 100 "<red>[Owner]</red>"
-/lp group admin meta setprefix 90 "<dark_red>[Admin]</dark_red>"
-/lp group vip meta setprefix 50 "<gold>[VIP]</gold>"
+```text
+/lp group owner meta setprefix 100 "<red>[Owner]</red> "
+/lp group admin meta setprefix 90 "<dark_red>[Admin]</dark_red> "
+/lp group vip meta setprefix 50 "<gold>[VIP]</gold> "
 ```
 
-The `{prefix}` placeholder in your chat format will then display these LuckPerms prefixes automatically.
+Use `{prefix}` in the selected format. For primary-group format files such as `formats/groups/vip.yml`, see [Chat Formats](chat-formats.md). Changing the detection mode here does not change the format resolver into a permission-based format selector.
+
+## Legacy Group Settings
+
+The generated file also contains fields such as `message-cooldown`, `command-cooldown`, `max-mentions`, `max-message-length`, `can-use-colors`, `can-use-formatting`, `can-use-gradients`, `max-quick-replies`, `max-mail`, and moderation/slowmode/mute bypass flags. They can be loaded and displayed by group tools, but **the current message and command paths do not enforce these fields as group policies**.
+
+Use the controls that the feature actually checks:
+
+- [Message formatting permissions](../features/chat-formatting.md) for colors and formatting.
+- [Anti-spam](../moderation/anti-spam.md) and [slowmode](../moderation/slowmode.md) for message intervals.
+- [Mentions](../features/mentions.md) and [newcomer settings](../moderation/newcomer-system.md) for mention restrictions.
+- [Quick replies](../features/quick-replies.md), [mail](../features/mail-system.md), and [shop perks](../features/chat-shop.md) for their own limits.
+- The relevant explicit bypass permission from [Commands & Permissions](../commands-and-permissions.md).
+
+Setting `bypass-moderation: true` or `can-use-colors: true` here is not a substitute for granting those permissions. The legacy file-level `enabled` key is not read by the current group manager either.

@@ -1,26 +1,16 @@
 # 🆕 Newcomer System
 
-The newcomer system provides special handling for new players, including a newcomer tag, welcome messages, slowmode restrictions, and mention limits. Configuration is in `features/newcomer.yml`.
+The optional newcomer system gives new players a badge, an additional chat delay, and a limit on mention recipients. Configuration is in `features/newcomer.yml`; it is disabled by default.
 
 ## Configuration
 
 ```yaml
-enabled: true
-
-# Requirements to no longer be considered a newcomer
+enabled: false
 required-playtime-minutes: 60
 required-message-count: 10
-
-# Newcomer tag format (MiniMessage)
 newcomer-tag: "<gray>[New]</gray>"
-
-# Welcome message
-show-welcome-message: true
-welcome-messages:
-  - "<green>Welcome to the server, <white>{player}<green>!"
-  - "<gold>A new player has joined! Welcome, <white>{player}<gold>!"
-
-# Restrictions
+show-welcome-message: false
+welcome-messages: []
 apply-slowmode: true
 newcomer-slowmode-seconds: 5
 mention-restriction: false
@@ -29,59 +19,53 @@ max-mentions-per-message: 1
 
 ## How It Works
 
-A player is considered a "newcomer" until they meet **both** requirements:
+A player graduates when **either** requirement is met: 60 tracked minutes or ten accepted normal chat messages by default. A zero requirement allows immediate graduation. Playtime is connected time tracked by LPC Pro, not a lifetime Minecraft statistic.
 
-1. Played for at least `required-playtime-minutes` minutes
-2. Sent at least `required-message-count` messages
+State persists between sessions. While state is loading or unavailable, newcomer chat is paused instead of guessing that the player is unrestricted. Check `/lpc status` and repair storage problems before asking the player to reconnect.
 
 ## Features
 
 ### Newcomer Tag
 
-New players automatically receive the configured tag:
-
-```yaml
-newcomer-tag: "<gray>[New]</gray>"
-```
-
-This appears in chat via the `{tag}` placeholder until the player graduates from newcomer status.
+The badge is added alongside the player's existing rank/selected tag. It does not replace them. The main `enable-tags` setting still controls tag rendering.
 
 ### Welcome Messages
 
-Random welcome messages are sent when a newcomer joins:
+To add a welcome, enable `show-welcome-message` and fill the list:
 
 ```yaml
+show-welcome-message: true
 welcome-messages:
-  - "<green>Welcome to the server, <white>{player}<green>!"
-  - "<gold>A new player has joined! Welcome, <white>{player}<gold>!"
+  - "<green>Welcome to the server, <white>{player}</white>!"
 ```
+
+This is an optional example, not the default message list.
 
 ### Slowmode
 
-Newcomers can have an enforced slowmode, limiting how quickly they can send messages:
-
-```yaml
-apply-slowmode: true
-newcomer-slowmode-seconds: 5  # 5 seconds between messages
-```
+`apply-slowmode: true` adds the configured five-second newcomer floor. Normal anti-spam and other delays can still apply. `lpcpro.slowmode.bypass` skips the delay but does not grant the full newcomer bypass.
 
 ### Mention Restrictions
 
-Limit how many players newcomers can mention per message:
+When `mention-restriction: true`, `max-mentions-per-message` limits unique eligible recipients. This also limits expanded mentions such as `@everyone`. Use `0` to allow no recipients or `-1` for no newcomer cap. A message that exceeds the cap is rejected before mention notifications are sent.
 
-```yaml
-mention-restriction: false     # Enable/disable
-max-mentions-per-message: 1    # Max mentions when enabled
-```
+## Commands
 
-## Settings Reference
+| Command | Description |
+|---|---|
+| `/newcomer status <player>` | Inspect a known player's newcomer state |
+| `/newcomer graduate <player>` | Graduate the player manually |
+| `/newcomer reset <player>` | Reset newcomer progress |
+| `/newcomer reload` | Reload the newcomer policy |
 
-| Setting | Type | Default | Description |
-|---|---|---|---|
-| `required-playtime-minutes` | integer | `60` | Minutes of playtime to graduate |
-| `required-message-count` | integer | `10` | Messages needed to graduate |
-| `newcomer-tag` | string | `<gray>[New]</gray>` | Tag displayed for newcomers |
-| `apply-slowmode` | boolean | `true` | Enforce slowmode on newcomers |
-| `newcomer-slowmode-seconds` | integer | `5` | Seconds between messages |
-| `mention-restriction` | boolean | `false` | Limit mentions for newcomers |
-| `max-mentions-per-message` | integer | `1` | Max mentions when restricted |
+These in-game staff commands require `lpcpro.newcomer.admin`; aliases are `/newbie` and `/nc`. Invalid reloads keep the last valid newcomer configuration.
+
+## Permissions
+
+| Permission | Description |
+|---|---|
+| `lpcpro.newcomer.admin` | Use newcomer administration commands |
+| `lpcpro.newcomer.bypass` | Skip the badge, restrictions, and newcomer progress increments |
+| `lpcpro.slowmode.bypass` | Skip the applicable delay only |
+
+Use `/lpc diagnose <online-player>` to inspect the currently cached newcomer policy alongside the player's chat route.

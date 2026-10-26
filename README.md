@@ -1,57 +1,38 @@
 # LPC Pro v2
 
-**The most advanced chat management plugin for Minecraft servers.**
+**Chat formatting, player styles, moderation, and more for your Minecraft server.**
 
-LPC Pro v2 is a comprehensive chat plugin built for Paper/Spigot servers running Minecraft 1.17 - 1.21.11. It provides everything you need to manage, moderate, and enhance your server's chat experience — from custom formats and channels to full moderation suites, social features, and third-party integrations.
+This guide covers **LPC Pro 2.6.0**. Start with your existing ranks and chat layout, then turn on the features your server needs. Paper is recommended; Spigot and Folia have the feature limits described in [Requirements](getting-started/requirements.md).
 
 ---
 
 ## Key Features
 
-- **Chat Channels** — Global, local, staff, trade, help, and fully custom channels with range-based, world-based, and cross-server support.
-- **Chat Formatting** — Fully customizable chat formats with hover tooltips, click actions, MiniMessage support, hex colors, and gradients.
-- **Moderation Suite** — Anti-spam, anti-caps, anti-advertising, swear filter with leet-speak detection, muting, warnings, reports, and infractions.
-- **Private Messaging** — `/msg`, `/reply`, ignore lists, and staff spy mode.
-- **Mail System** — Send messages to offline players.
-- **Reputation System** — Player karma with leaderboards and cooldowns.
-- **Achievements** — Track chat milestones and reward players with tags.
-- **Polls** — Create in-chat polls with timed voting.
-- **Chat Games** — Six game types (unscramble, math, trivia, reverse, type race, emoji guess) with configurable rewards.
-- **Mentions** — `@player`, `@everyone`, and `@here` with sound notifications.
-- **Nicknames & Colors** — Per-player chat color selection and nickname customization.
-- **Chat Shop** — Cosmetics shop for chat colors, name colors, tags, and perks.
-- **Chat Bubbles** — Floating text above players' heads using TextDisplay entities.
-- **Chat Translation** — Translate messages between languages via LibreTranslate, Google, or DeepL.
-- **Macros** — Pre-defined message templates for staff and players.
-- **Chat History & Search** — Staff tools to view and search chat logs with advanced filtering.
-- **Offline Messages** — Queue private messages for offline players with automatic delivery.
-- **Tab List** — Customizable header/footer with placeholders and animations.
-- **Discord Integration** — Bridge chat between Minecraft and Discord via webhooks and DiscordSRV.
-- **AI Filter** — AI-powered content moderation via OpenAI.
-- **Content Filter** — Filter signs, books, and anvil renames.
-- **Mod Queue** — Staff review queue for flagged messages.
-- **Anti-Bot Protection** — Rate limiting and behavior detection for new joins.
-- **Newcomer System** — Special handling, tags, and restrictions for new players.
-- **Raid Protection** — Automatic detection and response to bot raids and mass-join attacks.
-- **Smart Announcements** — Context-aware messages that trigger based on conditions.
-- **MOTD** — Customizable welcome messages with per-group and first-join variants.
-- **Proxy Support** — Cross-server chat synchronization for BungeeCord/Velocity networks.
-- **Per-Group Settings** — Different cooldowns, limits, and permissions per rank tier.
-- **Database Support** — SQLite (zero-config) or MySQL/MariaDB for larger networks.
-- **50+ Commands** — Dynamically registered with full tab completion.
-- **PlaceholderAPI** — Built-in placeholders plus full PAPI expansion support.
+- **Chat Channels** — Global, local, staff, and custom channels, with permission checks, quick prefixes, and optional automatic channel focus.
+- **Chat Formatting** — MiniMessage, legacy and hex colors, gradients, hover text, click actions, and group or channel layouts.
+- **Chat Style Editor** — Six ready-made designs, private previews, explicit save, and restoration of the previous saved format.
+- **Player Style Profiles** — Save personal name colors, chat colors, and tags; preview privately and switch between saved combinations.
+- **Sharing in Chat** — Clickable read-only inventory, ender chest, and shulker snapshots, plus world coordinates with click-to-copy.
+- **Personal Chat Settings** — Choose whether to receive supported public chat and game messages, and select or silence mention sounds.
+- **Private Messaging** — Private messages, replies, ignore lists, DND, and staff spy tools.
+- **Mail & Offline Messages** — Send mail or queue supported private messages for later delivery.
+- **Moderation Suite** — Anti-spam, anti-caps, anti-advertising, swear filtering, mutes, warnings, reports, and infractions.
+- **Optional AI & Cloud Filters** — Configure an external AI provider with Observe or Enforce mode, or download word lists. AI is disabled by default.
+- **Community Features** — Reputation, achievements, polls, six chat games, and a chat cosmetics shop.
+- **Newcomer System** — An optional badge, additional message interval, and mention limits based on tracked newcomer progress.
+- **Chat Bubbles, Translation & Utilities** — Optional bubbles, command-based translation, macros, quick replies, nicknames, tags, history, and tab list customization.
+- **Server Messages** — Join, quit, and death messages, optional announcements, and an in-game welcome MOTD.
+- **Integrations** — LuckPerms, Vault, PlaceholderAPI, custom glyph providers, optional Discord and authenticated proxy chat.
+- **Bedrock Menus** — Optional native settings and recent-message actions for genuine Geyser/Floodgate connections.
+- **Storage & Diagnostics** — SQLite or MySQL storage, `/lpc status`, and `/lpc diagnose` to explain a player's selected channel and format.
 
 ---
 
 ## Supported Versions
 
-| Minecraft Version | Status |
-|---|---|
-| 1.21 - 1.21.11 | Fully Supported |
-| 1.18 - 1.20.6 | Supported |
-| 1.17 | Supported |
+Use the server and Java guidance in [Requirements](getting-started/requirements.md). A newer Java client connecting through ViaVersion does not establish support for running that same server version. Folia deliberately disables several features, including inventory sharing and public replies.
 
-**Server Software:** Paper (recommended), Spigot
+The 2.6.0 release checks include a fresh Paper 1.21.5 startup, a private existing-data upgrade, reload, and connected-client delivery. Java 26.3 and Bedrock 26.52 device checks cover the same plugin class files. They do not certify every server version, provider, or Bedrock transport combination.
 
 ---
 
@@ -59,5 +40,8 @@ LPC Pro v2 is a comprehensive chat plugin built for Paper/Spigot servers running
 
 - [Installation Guide](getting-started/installation.md)
 - [Initial Setup](getting-started/initial-setup.md)
+- [Updating & Recovery](getting-started/updating.md)
+- [Chat Style Editor](features/chat-style-editor.md)
+- [Player Style Profiles](features/player-style-profiles.md)
 - [Commands & Permissions](commands-and-permissions.md)
 - [FAQ & Troubleshooting](faq.md)

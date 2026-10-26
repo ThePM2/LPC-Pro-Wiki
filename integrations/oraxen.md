@@ -1,27 +1,27 @@
 # ⛏️ Oraxen
 
-LPC Pro integrates with [Oraxen](https://www.spigotmc.org/resources/oraxen.72448/) to allow players to use custom glyphs in chat messages.
-
-## What It Enables
-
-- **Custom Glyphs** — Players can type `:glyph_name:` in chat and it renders as a custom glyph defined in Oraxen
+LPC Pro has an optional Oraxen glyph hook. It looks for the provider's `GlyphHandler.parse(String)` API and passes text through it when available.
 
 ## Setup
 
-1. Install Oraxen on your server
-2. Ensure `oraxen: true` is set in `config.yml` under `hooks:`
-3. Define your glyphs in Oraxen's configuration
+1. Install Oraxen and configure its glyphs/resource pack.
+2. Keep the following in `config.yml`:
+
+```yaml
+hooks:
+  oraxen: true
+```
+
+3. Check the log for successful initialization. If the installed provider no longer exposes the expected API, the hook stays unavailable rather than creating replacement glyphs.
 
 ## Usage
 
-Players type glyph shortcodes in their messages:
+Use syntax and glyph names supported by your installed Oraxen version. For a provider configuration accepting a `:star:` shortcode, for example:
 
+```text
+Check this out :star:
 ```
-Check this out :star: Pretty cool :heart:
-```
 
-LPC Pro automatically replaces the `:glyph:` syntax with the corresponding Oraxen glyph.
+The glyph and resource pack come from Oraxen, not LPC Pro. The current string-only hook does not add a separate player-aware permission check. Verify restricted glyph behavior in your provider before relying on it.
 
-{% hint style="warning" %}
-If both Oraxen and ItemsAdder are installed, both will process `:emoji:` syntax. It's recommended to only enable one of these integrations to avoid conflicts.
-{% endhint %}
+Avoid overlapping shortcodes when ItemsAdder, Oraxen, or another glyph provider processes the same text. Nexo has its own [dedicated integration](nexo.md).

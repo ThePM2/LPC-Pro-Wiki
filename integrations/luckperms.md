@@ -1,67 +1,47 @@
 # 🍀 LuckPerms
 
-LPC Pro integrates with [LuckPerms](https://luckperms.net/) for group detection, prefixes, and suffixes in chat formats.
-
-## What It Enables
-
-- **Group Detection** — Determine player groups for per-group chat settings
-- **Prefixes/Suffixes** — Display rank prefixes and suffixes in chat formats
-- **Permission Checks** — All LPC Pro permissions are compatible with LuckPerms
+LPC Pro uses LuckPerms for primary-group detection and rank metadata where available. LuckPerms can also manage all normal LPC permission nodes.
 
 ## Setup
 
-1. Install LuckPerms on your server
-2. LPC Pro automatically detects LuckPerms — no additional configuration needed
-3. Set `detection-mode: "LUCKPERMS_GROUP"` in `advanced/groups.yml` for group-based settings
-
-## Group Detection
-
-In `advanced/groups.yml`, set the detection mode:
+1. Install LuckPerms.
+2. Set `detection-mode: "LUCKPERMS_GROUP"` in `advanced/groups.yml` to use its primary group for LPC group settings.
+3. Match LPC group IDs to the actual LuckPerms primary-group names.
 
 ```yaml
 detection-mode: "LUCKPERMS_GROUP"
 ```
 
-Group names in `advanced/groups.yml` must **exactly match** your LuckPerms group names:
+If LuckPerms is unavailable, this detection mode falls back to LPC permission-group selection and logs a warning.
+
+## Group Settings and Formats
+
+LPC groups in `advanced/groups.yml` control supported group settings. Per-group format files live in `formats/groups/`; `config.yml` must have `use-group-formats: true` for those files to participate in format selection.
 
 ```yaml
 groups:
-  owner:       # Must match LuckPerms group "owner"
-    priority: 1000
-    # ...
-  admin:       # Must match LuckPerms group "admin"
+  admin:
     priority: 800
-    # ...
+    chat-prefix: ""
 ```
+
+This is an excerpt, not a replacement for the rest of the group's settings. An empty `chat-prefix` allows external rank metadata to be used; a nonempty LPC prefix overrides it. Use `/lpc diagnose <online-player>` to see the selected group and actual format origin.
 
 ## Prefixes and Suffixes
 
-Set prefixes in LuckPerms:
+For example, set a LuckPerms prefix and use `{prefix}` in your format:
 
-```bash
-/lp group owner meta setprefix 100 "<red>[Owner]</red>"
-/lp group admin meta setprefix 90 "<dark_red>[Admin]</dark_red>"
-/lp group vip meta setprefix 50 "<gold>[VIP]</gold>"
+```text
+/lp group vip meta setprefix 50 "<gold>[VIP]</gold> "
 ```
-
-Then use them in chat formats with the `{prefix}` and `{suffix}` placeholders:
 
 ```yaml
 player:
-  text: "{prefix} {name} {suffix}"
+  text: "{prefix}{name}{suffix}"
 ```
 
-{% hint style="tip" %}
-Set `chat-prefix: ""` (empty) in `advanced/groups.yml` for any group to use the LuckPerms prefix instead of a custom one.
-{% endhint %}
+Keep the other format parts. A player's selected color/tag and configured group formatting can affect the final result, so diagnose a real player rather than assuming group membership alone chooses a file.
 
 ## PlaceholderAPI
 
-With both LuckPerms and PlaceholderAPI installed, you can use LuckPerms placeholders in chat formats:
-
-| Placeholder | Description |
-|---|---|
-| `%luckperms_prefix%` | Player's prefix |
-| `%luckperms_suffix%` | Player's suffix |
-| `%luckperms_primary_group_name%` | Primary group name |
-| `%luckperms_groups%` | All groups |
+With the appropriate LuckPerms expansion installed, external `%luckperms_prefix%`, `%luckperms_suffix%`, and `%luckperms_primary_group_name%` values can also be used. See [PlaceholderAPI](placeholderapi.md).

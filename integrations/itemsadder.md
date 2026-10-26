@@ -1,33 +1,32 @@
 # 🖼️ ItemsAdder
 
-LPC Pro integrates with [ItemsAdder](https://www.spigotmc.org/resources/itemsadder.73355/) to allow players to use custom emojis in chat messages.
-
-## What It Enables
-
-- **Custom Emojis** — Players can type `:emoji_name:` in chat and it renders as a custom emoji/font image defined in ItemsAdder
+LPC Pro can pass chat text through ItemsAdder's font-image API so installed font images can appear in chat.
 
 ## Setup
 
-1. Install ItemsAdder on your server
-2. Ensure `items-adder: true` is set in `config.yml` under `hooks:`
-3. Define your emojis in ItemsAdder's font_images configuration
+1. Install a compatible ItemsAdder version and configure its font images/resource pack.
+2. Keep `hooks.items-adder: true` in `config.yml`.
+3. Check the startup log for successful hook initialization.
+
+```yaml
+hooks:
+  items-adder: true
+```
 
 ## Usage
 
-Players type emoji shortcodes in their messages:
+Use a font-image shortcode that actually exists in your ItemsAdder configuration:
 
-```
-Hello everyone :smile: How's it going? :thumbsup:
+```text
+Hello everyone :smile:
 ```
 
-LPC Pro automatically replaces the `:emoji:` syntax with the corresponding ItemsAdder font image or custom stack.
+`smile` is an example name, not an image bundled with LPC Pro. Players need the provider's resource pack to see a custom image. LPC does not create the image or pack from the shortcode.
+
+The hook prefers the player-aware API for provider permission checks. If a provider exposes only the string-only fallback, LPC logs that emoji permissions cannot be enforced by that API. Check this before using restricted images.
 
 ## Emoji Command
 
-| Command | Description | Permission |
-|---|---|---|
-| `/emoji` | View available emojis | `lpcpro.emoji` |
+`/emoji` (`lpcpro.emoji`) lists LPC's configured emojis. It is not an automatic browser of every ItemsAdder font image.
 
-{% hint style="warning" %}
-If both ItemsAdder and Oraxen are installed, both will process `:emoji:` syntax. It's recommended to only enable one of these integrations to avoid conflicts.
-{% endhint %}
+When several glyph providers are enabled, give their shortcodes distinct names or enable only the one you intend to process that text. Hook availability and resource-pack rendering should be checked with your installed provider version.

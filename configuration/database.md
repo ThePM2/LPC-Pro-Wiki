@@ -1,36 +1,35 @@
 # 🗄️ Database
 
-LPC Pro stores player data, mutes, warnings, reputation, chat logs, and more in a database. Configuration is in `database.yml`.
+LPC Pro stores channels, settings, mutes, warnings, reputation, chat logs, purchases, and other records in a database. Connection settings are in the root `database.yml`.
 
 ## SQLite (Default)
 
-SQLite requires zero configuration. Data is stored in a local `lpcpro.db` file inside the plugin folder.
+SQLite needs no connection configuration. Data is stored in `plugins/LPC-Pro/lpcpro.db`:
 
 ```yaml
 type: local
 ```
 
-This is the recommended option for single servers.
+This is the simplest starting point for a single server. LPC uses SQLite's WAL mode. Stop the server cleanly before taking a file backup; copying only the main database while it is being written may miss pending WAL data.
 
 ## MySQL / MariaDB
 
-For larger servers or BungeeCord/Velocity networks, use a remote MySQL/MariaDB database:
+The remote path uses MySQL Connector/J. Configure the host and port as separate fields:
 
 ```yaml
 type: remote
-
-host: localhost:3306
+host: 127.0.0.1
+port: 3306
 database: lpcpro
-username: your_username
-password: your_password
+username: lpcpro
+password: 'replace-with-your-database-password'
 ```
 
-### Requirements
-
-- **MySQL 8.0+** or **MariaDB 10.3+**
-- Collation: `utf8mb4_unicode_520_ci` (required for emoji and unicode support)
+Use a dedicated account with the permissions needed to create/alter LPC tables and read/write its data. MySQL 8 is the intended remote target. MariaDB compatibility depends on the installed server and driver combination; it has not been established for every version.
 
 ### Creating the Database
+
+Use a database supporting four-byte Unicode for chat, emoji, and non-English names:
 
 ```sql
 CREATE DATABASE lpcpro
@@ -38,47 +37,42 @@ CREATE DATABASE lpcpro
   COLLATE utf8mb4_unicode_520_ci;
 ```
 
-LPC Pro will automatically create all required tables on startup.
+This is an example compatible collation; create users/grants separately according to your database host. LPC creates and migrates its required tables on startup. Required schema failures prevent normal plugin startup rather than silently reporting an empty store.
 
-## Connection String
+## Connection Settings
 
-For advanced users, you can customize the JDBC connection string:
-
-```
-jdbc:{driver}://{host}/{database}?autoReconnect=true&characterEncoding=UTF-8&tcpKeepAlive=true&useSSL=false
-```
-
-LPC Pro uses **HikariCP** for connection pooling, which handles reconnection automatically.
+LPC uses HikariCP pooling. The current remote URL uses MySQL's `sslMode=PREFERRED`; this is opportunistic encryption, not a promise of certificate-verified TLS. There is no configurable custom JDBC `line` or driver field in `database.yml`.
 
 {% hint style="danger" %}
-`database.yml` does **not** support reloading. Any changes require a full server restart.
+Database settings require a full server restart. Changing `type` selects another store; it does not automatically transfer SQLite data to MySQL or migrate existing balances between them.
 {% endhint %}
 
 ## Data Stored
 
-The following data is persisted in the database:
-
-| Table | Purpose |
+| Table / State | Purpose |
 |---|---|
-| `lpcpro_channels` | Custom chat channel definitions |
-| `lpcpro_player_channels` | Channel membership and modes |
-| `lpcpro_ignored_players` | Player ignore lists |
-| `lpcpro_mutes` | Active and expired mutes |
-| `lpcpro_warnings` | Player warnings |
-| `lpcpro_player_notes` | Staff notes on players |
-| `lpcpro_reputation` | Reputation scores |
-| `lpcpro_reputation_log` | Reputation transaction log |
-| `lpcpro_reports` | Chat reports |
-| `lpcpro_polls` | Poll data |
-| `lpcpro_poll_votes` | Poll vote records |
-| `lpcpro_offline_messages` | Messages for offline players |
-| `lpcpro_player_settings` | Per-player settings (color, toggles) |
-| `lpcpro_chat_logs` | Chat message log |
-| `lpcpro_chat_stats` | Player chat statistics (message counts, mentions, replies) |
-| `lpcpro_achievements` | Unlocked achievements per player |
-| `lpcpro_quick_replies` | Saved quick reply messages |
-| `lpcpro_newcomer` | Newcomer tracking (playtime, message count) |
-| `lpcpro_shop_purchases` | Shop item purchase records |
-| `lpcpro_shop_points` | Player shop currency balances |
-| `lpcpro_mail` | Mail messages between players |
-| `lpcpro_player_language` | Player language preferences for translation |
+| `lpcpro_channels`, `lpcpro_player_channels` | Stored channel definitions, membership, and write selection |
+| `lpcpro_channel_focus` | Personal automatic/manual channel focus |
+| `lpcpro_ignored_players` | Ignore lists |
+| `lpcpro_mutes`, `lpcpro_warnings`, `lpcpro_player_notes` | Staff moderation records |
+| `lpcpro_reputation`, `lpcpro_reputation_log` | Reputation and its transaction log |
+| `lpcpro_reports` | Player reports |
+| `lpcpro_polls`, `lpcpro_poll_votes` | Polls and votes |
+| `lpcpro_offline_messages`, `lpcpro_mail` | Offline messages and mail |
+| `lpcpro_player_settings` | Cosmetics, toggles, and receiving preferences |
+| `lpcpro_newcomer` | Persistent newcomer progress |
+| `lpcpro_quick_replies` | Saved personal quick replies |
+| `lpcpro_chat_profiles`, `lpcpro_chat_profile_owners` | Saved personal style profiles |
+| `lpcpro_chat_logs`, `lpcpro_chat_stats` | Chat history and statistics |
+| `lpcpro_achievements`, `lpcpro_achievement_mentions` | Achievement progress |
+| `lpcpro_shop_purchases`, `lpcpro_shop_points` | Internal points and shop ownership |
+| `lpcpro_player_language` | Translation preferences |
+| `lpcpro_schema_version` | Completed ordered schema migrations |
+
+Additional feature-owned records cover purchases/rewards and recovery. Not all state is SQL: for example, automatic infractions use `data/infractions.json`, and review/cache files have separate lifetimes. Back up the entire LPC-Pro directory as well as a remote database.
+
+## Health and Recovery
+
+`/lpc status` shows schema health and pending/failed/rejected storage work. Accepted writes are queued and drained on normal shutdown; a forced kill or power loss can still interrupt work. If settings storage fails, a player may need to reconnect after repair to reload durable values.
+
+A shared remote database is not a distributed cache-invalidation system. Online settings are session snapshots; simultaneous sessions on different backends should not be treated as strongly consistent. Configure the [authenticated proxy relay](../integrations/proxy.md) for supported live notifications.

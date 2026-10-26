@@ -1,69 +1,63 @@
 # 📣 Smart Announcements
 
-Smart announcements are context-aware messages that trigger based on conditions like player count, playtime, permissions, or world. Unlike regular timed announcements, they only send when their conditions are met. Configuration is in `features/smart-announcements.yml`.
+Smart announcements select eligible players using online count, total playtime, permissions, worlds, and server-local hours. Configuration is in `features/smart-announcements.yml`.
 
-## Configuration
+## Default Configuration
+
+Fresh installations are silent:
 
 ```yaml
-enabled: true
-
-# How often to check conditions (seconds)
+enabled: false
 check-interval-seconds: 60
+announcements: {}
 ```
 
 ## Defining Announcements
 
-Each announcement has a message, conditions, and delivery settings:
+This is an optional example, not a shipped announcement. Merge it into the existing file:
 
 ```yaml
+enabled: true
+check-interval-seconds: 60
 announcements:
-  welcome:
+  welcome_tip:
     enabled: true
-    message: "<dark_gray>  »</dark_gray> <green>Welcome</green> <dark_gray>—</dark_gray> <gray>Welcome to the server!"
+    message: "<green>Welcome! <gray>Use <white>/toggle menu</white> to choose your chat settings."
     per-player: true
-    cooldown-seconds: 3600
+    cooldown-seconds: 300
     priority: 10
     random-chance: 1.0
     conditions:
-      min_playtime_minutes: 0
-      max_playtime_minutes: 5
+      max_playtime_minutes: 30
     worlds: []
 ```
 
+Run `/lpc reload` after editing.
+
 ### Announcement Properties
 
-| Property | Type | Description |
+| Property | Default When Omitted | Description |
 |---|---|---|
-| `enabled` | boolean | Enable/disable this announcement |
-| `message` | string | MiniMessage-formatted message text |
-| `per-player` | boolean | `true` = per-player cooldown, `false` = global cooldown |
-| `cooldown-seconds` | integer | Time before this announcement can trigger again |
-| `priority` | integer | Higher priority announcements are checked first (1-10) |
-| `random-chance` | float | Chance to send (0.0 to 1.0, where 1.0 = 100%) |
-| `worlds` | list | Restrict to specific worlds (empty = all worlds) |
+| `enabled` | `true` | Include this entry |
+| `message` | Empty | MiniMessage text; supported placeholders resolve for the recipient |
+| `per-player` | `false` | With `true`, send this entry at most once per player session |
+| `cooldown-seconds` | `300` | Global interval before this entry can be considered again, including for per-player entries |
+| `priority` | `5` | Higher values checked first |
+| `random-chance` | `1.0` | Chance per eligible check, from 0 to 1 |
+| `worlds` | Empty | Allowed world names; empty means all worlds |
+
+At most one announcement entry is selected per check. Per-player entries are not recurring personal timers: after seeing the entry, that player is skipped until their session is reset by leaving/rejoining. A plugin restart also clears this in-memory history.
 
 ### Available Conditions
 
 | Condition | Description |
 |---|---|
-| `min_players` | Minimum online player count |
-| `max_players` | Maximum online player count |
-| `min_playtime_minutes` | Player must have played at least X minutes this session |
-| `max_playtime_minutes` | Player must have played at most X minutes this session |
-| `permission` | Player must have this permission |
-| `world` | Player must be in this world |
+| `min_players`, `max_players` | Inclusive online count bounds |
+| `min_playtime_minutes`, `max_playtime_minutes` | Inclusive **total** playtime bounds from the player's Minecraft statistic |
+| `permission` | Permission the recipient must have |
+| `min_hour`, `max_hour` | Inclusive 0–23 hour bounds using the server machine's local clock |
 
-## Default Announcements
-
-LPC Pro ships with these examples:
-
-| Name | Trigger | Description |
-|---|---|---|
-| `welcome` | First 5 minutes of playtime | Welcome message for recent joins |
-| `chat_tip` | After 30 minutes | Tip about @mentions |
-| `busy_server` | 20+ players online | Acknowledgment of a busy server |
-| `vote_reminder` | 5+ players, 30% chance | Vote reminder |
-| `vip_tip` | Has `group.vip` permission, hub world | VIP-specific tip (disabled by default) |
+Use the entry's `worlds` list for world filtering. `conditions.world` is not a supported runtime condition. Hour ranges do not wrap across midnight; use separate entries if needed.
 
 ## Examples
 
@@ -71,12 +65,12 @@ LPC Pro ships with these examples:
 
 ```yaml
 announcements:
-  donor_perk:
+  donor_tip:
     enabled: true
-    message: "<gold>Thanks for donating! Use <white>/kit donor</white> for your daily rewards."
+    message: "<gold>Thanks for supporting the server! <gray>Try your saved chat profiles."
     per-player: true
-    cooldown-seconds: 86400
-    priority: 1
+    cooldown-seconds: 300
+    priority: 5
     random-chance: 1.0
     conditions:
       permission: "group.donor"
@@ -89,12 +83,15 @@ announcements:
 announcements:
   pvp_tip:
     enabled: true
-    message: "<red>PvP is enabled in this world! Watch your back."
-    per-player: true
+    message: "<red>PvP is enabled in this world."
+    per-player: false
     cooldown-seconds: 600
     priority: 5
     random-chance: 1.0
-    conditions: {}
+    conditions:
+      min_players: 2
     worlds:
       - "pvp_arena"
 ```
+
+These are fragments for separate entries under your existing `announcements` map. Keep the top-level feature enabled. For simple timed broadcasts without conditions, use [Server Messages](server-messages.md).

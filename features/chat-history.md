@@ -10,6 +10,7 @@ LPC Pro logs chat messages and provides commands for staff to view history and s
 |---|---|---|---|
 | `/chathistory <player> [count]` | `/chatlogs`, `/clogs` | View a player's chat history | `lpcpro.chatlog.view` |
 | `/chathistory channel <id> [count]` | — | View channel message history | `lpcpro.chatlog.view` |
+| `/chathistory search <query>` | — | Search up to 50 matching entries | `lpcpro.chatlog.view` + `lpcpro.chatlog.search` |
 
 ### Chat Search
 
@@ -18,7 +19,8 @@ LPC Pro logs chat messages and provides commands for staff to view history and s
 | `/chatsearch <query>` | `/csearch`, `/searchchat`, `/findchat` | Search chat logs by content | `lpcpro.chatlog.search` |
 | `/chatsearch player:<name> [query]` | — | Search by player (optional content filter) | `lpcpro.chatlog.search` |
 | `/chatsearch channel:<id> [query]` | — | Search by channel | `lpcpro.chatlog.search` |
-| `/chatsearch time:<duration> [query]` | — | Search within time range | `lpcpro.chatlog.search` |
+| `/chatsearch time:<duration> <query>` | — | Search content within a time range | `lpcpro.chatlog.search` |
+| `/chatsearch channel:<id> time:<duration> limit:<count> [query]` | — | Combine filters and a result limit | `lpcpro.chatlog.search` |
 
 ### Time Duration Format
 
@@ -34,9 +36,9 @@ The `time:` filter accepts these formats:
 ### Examples
 
 ```
-/chatsearch diamond          # Find all messages containing "diamond"
-/chatsearch player:Steve     # Find all messages from Steve
-/chatsearch time:1h grief    # Find "grief" messages in the last hour
+/chatsearch diamond
+/chatsearch player:Steve
+/chatsearch channel:global time:1h limit:50 grief
 ```
 
 ## Features
@@ -44,8 +46,27 @@ The `time:` filter accepts these formats:
 - Advanced multi-filter search
 - Time-based filtering
 - Clickable search results
-- Message type filtering (CHAT, PM, COMMAND)
-- Paginated results
+- Message type labels (CHAT, PM, COMMAND) in stored results
+- Bounded result counts: 20 by default, at most 100 for player/channel history or `limit:` search
+
+`/chathistory` requires a player; `/chatsearch` also works from console. Search needs a content query, a known `player:` filter or a `channel:` filter: `time:` alone does not start a query. The command does not provide a `type:` filter or page navigation.
+
+Logging is configured in `features/chat-logging.yml`; database storage must be healthy. New entries are written in batches, so a newly sent message may not appear instantly. These staff commands can expose recorded private messages; grant access only to trusted staff. Existing stored command records can also appear in results, but the current player-command path does not call the command logger.
+
+## Configuration
+
+The generated defaults are:
+
+```yaml
+enabled: true
+private-messages: true
+commands: false
+retention-days: 30
+```
+
+`retention-days` is limited to 1–3,650 days. Run `/lpc reload` after editing this file. `/lpc status` shows pending and unsaved log counts if storage is falling behind.
+
+The `commands` key is read and retained, but enabling it does not currently attach command recording to player commands. [Command spy](../commands-and-permissions.md#staff-utility-commands) is a separate feature and does not make those commands durable history entries.
 
 ## Permissions
 

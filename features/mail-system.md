@@ -12,6 +12,7 @@ The mail system allows players to send messages to offline players. When the rec
 | `/mail reply <id> <message>` | Reply to a mail message |
 | `/mail delete <id>` | Delete a specific mail message |
 | `/mail clear` | Clear all mail |
+| `/mail page <number>` | Open another inbox page |
 
 **Alias:** `/email`
 
@@ -43,7 +44,23 @@ notifications:
 |---|---|---|---|
 | `max-inbox-size` | integer | `50` | Maximum number of mails in a player's inbox |
 | `max-message-length` | integer | `500` | Maximum characters per mail message |
-| `expiration-days` | integer | `30` | Days before unread mail expires (`0` = never) |
+| `expiration-days` | integer | `30` | Days before mail expires, whether read or unread (`0` = never) |
 | `allow-self-mail` | boolean | `false` | Whether players can send mail to themselves |
 | `notify-on-login` | boolean | `true` | Notify players about unread mail when they join |
 | `login-notify-delay` | integer | `60` | Ticks to wait before showing the notification |
+
+
+## Sending and Saving Mail
+
+Both `enable-mail` in `config.yml` and `enabled` in this file must be on. Grant the configured `permission` to players who should use mail; `lpcpro.mail` is not explicitly granted to all players in the plugin descriptor. A change to `enable-mail` needs a restart; other mail settings use `/lpc reload`.
+
+```text
+/mail send Steve Your building materials are ready at spawn.
+/mail
+/mail read 12
+/mail reply 12 Thank you!
+```
+
+Use an ID from your own inbox. Only the recipient can read or delete a mail entry. Mail can be sent to known players who have joined before, whether currently online or offline. Mail from the server cannot be replied to. Inbox pages show eight entries each.
+
+Mail is stored separately from the automatic [Offline Messages](offline-messages.md) queue. A send is acknowledged after storage completes; if the inbox is full or storage fails, it is not reported as sent. Expiry applies to read and unread messages. Saved mail does not become a live private conversation or use the recipient's chat format.

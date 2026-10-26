@@ -1,45 +1,39 @@
 # 📄 Content Filter
 
-The content filter extends LPC Pro's chat moderation to non-chat content: signs, books, and anvil item renames. It reuses the same filters configured in `moderation/moderation.yml` (swear filter, anti-advertising, etc.). Configuration is in `moderation/content-filter.yml`.
+The content filter applies moderation to signs, book pages/titles, and anvil item renames. Configuration is in `moderation/content-filter.yml`; the underlying local rules are in `moderation/moderation.yml`.
 
 ## Configuration
 
 ```yaml
-# Apply chat filters to sign text
 filter-signs: true
-
-# Apply chat filters to book content
 filter-books: true
-
-# Apply chat filters to anvil item renames
 filter-anvil: true
-
-# true = Block the action entirely
-# false = Allow but censor the content (replace bad words with ***)
 block-on-filter: true
 ```
 
 ## Filter Behavior
 
-| Mode | Behavior |
+| Content | Behavior |
 |---|---|
-| `block-on-filter: true` | The action is cancelled — sign won't place, book won't save, item won't rename |
-| `block-on-filter: false` | The content is allowed but bad words are replaced with `***` |
+| Signs and anvil names | With `block-on-filter: true`, reject a cancellation result. A normal censoring/modification result is kept as replacement text, even with this setting enabled. |
+| Book pages and signed titles | With `block-on-filter: true`, reject either a cancellation or a text change. With `false`, use replacement text, but still reject a cancellation that has no replacement. |
+
+With `block-on-filter: false`, signs and anvils do not have the same cancellation-without-replacement protection as books. A cancellation-only rule may leave a sign's original text or clear an anvil name instead of producing censored text. Keep `block-on-filter: true` when cancellation rules must reject those edits. Test your selected actions on each content type before using a permissive configuration.
 
 ## What Gets Filtered
 
-The content filter applies all active moderation filters from `moderation/moderation.yml`:
+Content runs through the non-spam moderation path, including enabled advertising, local swear, caps, cloud, and optional background AI analysis. It does not update normal chat anti-spam history. Local filters can cancel or modify the edit synchronously.
 
-- **Swear filter** — Blocked words and evasion detection
-- **Anti-advertising** — URLs, IPs, and domains
-- Any other active chat filters
+{% hint style="info" %}
+AI remains post-hoc. It is not a guarantee that an already accepted sign, book, or item edit will be rolled back. Use local rules for immediate content restrictions.
+{% endhint %}
 
 ## Bypass Permissions
 
-Staff can bypass content filtering per content type:
-
 | Permission | Description |
 |---|---|
-| `lpcpro.bypass.filter.sign` | Bypass sign content filter |
-| `lpcpro.bypass.filter.book` | Bypass book content filter |
-| `lpcpro.bypass.filter.anvil` | Bypass anvil rename filter |
+| `lpcpro.bypass.filter.sign` | Skip sign content checks |
+| `lpcpro.bypass.filter.book` | Skip book content checks |
+| `lpcpro.bypass.filter.anvil` | Skip anvil content checks |
+
+Underlying filter permissions still apply when the content check runs. Use `/lpc reload` after editing the feature file.

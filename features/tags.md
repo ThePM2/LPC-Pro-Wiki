@@ -23,7 +23,7 @@ Staff members can have tags automatically assigned based on their rank permissio
 | `lpcpro.autotag.admin` | Admin | 5 |
 | `lpcpro.autotag.owner` | Owner | 6 (highest) |
 
-Higher tier takes precedence — a player with both `lpcpro.autotag.mod` and `lpcpro.autotag.admin` will display the Admin tag.
+Higher tier takes precedence when no manual tag is selected — a player with both `lpcpro.autotag.mod` and `lpcpro.autotag.admin` falls back to the Admin tag. A valid manual selection takes precedence over an auto-tag. Set `enable-auto-tag: false` in `config.yml` to stop automatic tags while keeping manual selection; changing this main switch requires a restart.
 
 ## Manual Tag Permissions
 
@@ -56,3 +56,18 @@ player:
 ```
 
 The `{tag}` placeholder includes a leading space when set, so formatting remains clean even for players without tags.
+
+
+## Access and Saved Selection
+
+Definitions live in `chat/tags.yml`. `enable-tags: false` in `config.yml` disables tag rendering and its command, including manual and automatic tags. That main switch requires a restart; reload tag definitions with `/lpc reload`.
+
+The `/tags` command needs `lpcpro.tags`, which is not explicitly defaulted to all players in the plugin descriptor. Grant it to the intended group. A tag itself can be available through its configured permission, an earned achievement reward or an owned shop unlock. Menu selection and applying a saved style profile check current access. A tag already equipped in ordinary player settings is not automatically cleared when a permission is removed; use the menu's reset action if you need to remove that selection.
+
+```text
+/lp group default permission set lpcpro.tags true
+/lp group moderator permission set lpcpro.tag.mod true
+/lp group moderator permission set lpcpro.autotag.mod true
+```
+
+The first node opens the menu, the second allows manual use of the Mod tag, and the third supplies its automatic fallback. Manual selection is saved in player settings. Tags can also be included in a [Style Profile](player-style-profiles.md), with current access checked when applying the profile.

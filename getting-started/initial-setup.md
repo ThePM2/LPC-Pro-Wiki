@@ -1,107 +1,63 @@
 # 🔧 Initial Setup
 
-After [installing](installation.md) LPC Pro, follow this guide to get your server's chat configured.
+After [installing](installation.md), start with a working layout and your existing ranks. You can add channels and moderation rules afterward.
 
-## 1. Set Up Groups
+## 1. Check Your Current Format
 
-If you use **LuckPerms** (recommended), open `advanced/groups.yml` and set:
+Run `/lpc diagnose` as a player with `lpcpro.admin`, or `/lpc diagnose Steve global` to inspect an online player's route. It explains the selected format, channel, and cosmetic precedence privately.
 
-```yaml
-detection-mode: "LUCKPERMS_GROUP"
+The selection order is an available explicit channel format, then an enabled primary-group format, then `chat`. Editing `formats/chat.yml` may have no visible effect when the player uses `formats/groups/vip.yml`.
+
+## 2. Choose a Chat Design
+
+```text
+/lpc style gallery
 ```
 
-Make sure the group names in `advanced/groups.yml` match your LuckPerms group names exactly. For example, if you have a LuckPerms group called `admin`, there should be an `admin:` entry under `groups:`.
+Browse six designs. Left-click for a private preview; right-click and confirm to stage a design, then choose **Save and apply**. A preview or staged draft alone does not change public chat. Existing custom layouts require explicit adoption before replacement, and saving creates a restorable backup.
 
-If you don't use LuckPerms, you can use permission-based detection:
+Use `/lpc style gallery vip` for a loaded format named `vip`. See [Chat Style Editor](../features/chat-style-editor.md) for editing controls and recovery.
 
-```yaml
-detection-mode: "PERMISSION"
-```
-
-With this mode, players need the `lpcpro.group.<name>` permission to be assigned to a group (e.g., `lpcpro.group.vip`).
-
-## 2. Customize Chat Formats
-
-Edit `formats/chat.yml` to change how chat messages appear. The format is split into **parts**, each with its own text, hover tooltip, and click action:
+Prefer editing YAML? This complete minimal `formats/chat.yml` needs no external placeholder expansion:
 
 ```yaml
+part-separator: " "
 player:
-  text: "{prefix}{tag} {name}"
+  text: "{prefix}{tag} {name}{suffix}"
   hover:
-    - "{prefix}{tag} {name}"
-    - "&7Messages: &f%lpcpro_messages%"
-    - ""
-    - "&aClick to send a private message!"
+    - "<gray>World: <white>{world}"
+    - "<green>Click to message"
   suggest: "/msg {name} "
-
 divider:
-  text: "&7➥"
-
+  text: "<dark_gray>»"
 message:
-  text: "&f{message}"
+  text: "<white>{message}"
 ```
 
-See [Chat Formats](../configuration/chat-formats.md) for the full reference.
+Run `/lpc reload` after a manual edit. To use only the generic/channel formats, set `use-group-formats: false` in `config.yml` and reload. See [Chat Formats](../configuration/chat-formats.md).
 
-## 3. Configure Channels
+## 3. Use Your Existing Ranks
 
-Edit `chat/channels.yml` to define your chat channels. Each channel can have its own range, permission, format, and quick prefix:
+LuckPerms primary groups and prefixes can be used without recreating ranks in LPC Pro. For example:
 
-```yaml
-channels:
-  global:
-    display-name: "Global"
-    color: "#FFFFFF"
-    range: 0           # 0 = unlimited
-    permission: ""     # empty = no permission required
-    auto-join: true
-    quick-prefix: "!"  # Type "!message" to send to this channel
-    format: "chat.yml"
-
-  local:
-    display-name: "Local"
-    color: "#AAAAAA"
-    range: 100         # 100 blocks
-    quick-prefix: "."
-    same-world: true
+```text
+/lp group vip meta setprefix 50 "<gold>[VIP]</gold> "
 ```
 
-See [Chat Channels](../features/chat-channels.md) for the full reference.
+An optional `advanced/groups.yml` `chat-prefix` overrides the provider prefix when non-empty. Its detection mode and displayed group settings are separate from format selection. Do not use its legacy color/limit fields as permission grants; see [Groups](../configuration/groups.md).
 
-## 4. Configure Moderation
+## 4. Check Channels and Player Choices
 
-Edit `moderation/moderation.yml` to tune the chat filters. All filters are enabled by default with sensible defaults:
+Start with the generated global channel. For a staff channel, configure an actual access permission in `chat/channels.yml`; switching to it does not grant access. The [Chat Channels](../features/chat-channels.md) guide covers complete definitions, quick prefixes, and optional automatic focus.
 
-- **Anti-Spam**: 3-second message delay, 80% similarity threshold
-- **Anti-Caps**: 70% caps threshold, auto-lowercase action
-- **Anti-Advertising**: Blocks URLs and IPs
-- **Swear Filter**: Censors profanity with automatic leet-speak detection
+Players can use [style profiles](../features/player-style-profiles.md), [chat settings](../features/chat-settings.md), and [mention sounds](../features/mention-sounds.md). These are personal choices; the server format remains under administrator control.
 
-See [Moderation Overview](../moderation/overview.md) for details.
+## 5. Review Optional Features
 
-## 5. Enable Integrations
+Check the generated files before enabling external services. [AI](../moderation/ai-filter.md), [cloud downloads](../moderation/cloud-filter.md), [Discord](../integrations/discord.md), [public replies](../features/public-replies.md), and automatic announcements each have their own switches and setup. AI is disabled by default.
 
-Edit `config.yml` to toggle plugin integrations:
+For a survival server, try a private style preview and a message containing `[coords]` or `[inv]`, then review the recipient and expiry rules in [Coordinates](../features/coordinates.md) and [Inventory Sharing](../features/inventory-sharing.md).
 
-```yaml
-hooks:
-  items-adder: true
-  placeholder-api: true
-  oraxen: true
-  via-version: true
-  geyser: true
-  protocol-lib: true
-  vanish: true
-```
+## 6. Apply and Check
 
-Only enable hooks for plugins you have installed.
-
-## 6. Apply Changes
-
-Run `/lpc reload` to apply your configuration changes.
-
-## Next Steps
-
-- [Configure your database](../configuration/database.md) if using MySQL
-- [Set up Discord integration](../integrations/discord.md)
-- [Review commands and permissions](../commands-and-permissions.md)
+Use `/lpc reload` for supported edits. Restart after changing top-level `enable...` switches or storage settings. Check `/lpc status`, try the relevant feature with an ordinary player account, and review [Commands & Permissions](../commands-and-permissions.md).

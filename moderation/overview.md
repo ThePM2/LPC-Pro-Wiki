@@ -1,97 +1,87 @@
 # 🛡️ Moderation Overview
 
-LPC Pro includes a comprehensive moderation suite for keeping your server chat clean and safe. All moderation features are configured in `moderation/moderation.yml` unless noted otherwise.
+LPC Pro includes automatic chat filters and staff tools for managing chat. Most local filter settings are in `moderation/moderation.yml`; optional systems have their own files.
 
 ## Moderation Features
 
 ### Chat Filters
-
-Automatic filters that process every chat message:
 
 | Filter | Config File | Description |
 |---|---|---|
 | [Anti-Spam](anti-spam.md) | `moderation/moderation.yml` | Message cooldown and similarity detection |
 | [Anti-Caps](anti-caps.md) | `moderation/moderation.yml` | Excessive capitals enforcement |
 | [Anti-Advertising](anti-advertising.md) | `moderation/moderation.yml` | URL, IP, and domain blocking |
-| [Swear Filter](swear-filter.md) | `moderation/moderation.yml` | Profanity filtering with evasion detection |
-| [AI Filter](ai-filter.md) | `moderation/ai-filter.yml` | AI-powered content analysis via OpenAI |
-| [Cloud Filter](cloud-filter.md) | `moderation/cloud-filter.yml` | Cloud-sourced word list filtering |
+| [Swear Filter](swear-filter.md) | `moderation/moderation.yml` | Local profanity filtering with evasion detection |
+| [AI Filter](ai-filter.md) | `moderation/ai-filter.yml` | Optional post-hoc analysis, Observe or Enforce |
+| [Cloud Filter](cloud-filter.md) | `moderation/cloud-filter.yml` | Downloaded word lists and local additions |
 | [Content Filter](content-filter.md) | `moderation/content-filter.yml` | Filter signs, books, and anvil renames |
 
 ### Staff Tools
 
-Manual moderation commands for staff:
-
 | Tool | Description |
 |---|---|
-| [Muting](muting.md) | Mute players, channels, or the entire server |
-| [Warnings](warnings.md) | Warn players with automatic threshold actions |
-| [Reports](reports.md) | Player reporting system |
-| [Infractions](infractions.md) | Automatic infraction point tracking |
-| [Mod Queue](mod-queue.md) | Staff review queue for flagged messages |
+| [Muting](muting.md) | Mute players, channels, or the server |
+| [Warnings](warnings.md) | Issue manual warnings with point thresholds |
+| [Reports](reports.md) | Review player reports and their captured context |
+| [Infractions](infractions.md) | Track automatic moderation points |
+| [Message Deletion](message-deletion.md) | Remove retained, managed chat messages |
+| [Slowmode](slowmode.md) | Set a manual chat delay |
+| [Mod Queue](mod-queue.md) | Manage queued entries; built-in filters do not currently populate it |
+
+Staff can also use `/note add <player> <note>`, `/note list <player>`, `/note remove <id>`, and `/note clear <player>`. These require `lpcpro.note` and the corresponding `.add`, `.view`, `.remove`, or `.clear` permission. `lpcpro.note.notify` allows join notifications about staff notes.
 
 ### Protection Systems
 
 | System | Config File | Description |
 |---|---|---|
-| [Anti-Bot](anti-bot.md) | `moderation/antibot.yml` | Bot detection and rate limiting |
-| [Newcomer System](newcomer-system.md) | `features/newcomer.yml` | Special handling for new players |
-| [Raid Protection](raid-protection.md) | `moderation/raidprotection.yml` | Mass-join flood protection |
+| [Anti-Bot](anti-bot.md) | `moderation/antibot.yml` | Join cooldowns and bot-like chat detection |
+| [Newcomer System](newcomer-system.md) | `features/newcomer.yml` | Optional persistent newcomer policy |
+| [Raid Protection](raid-protection.md) | `moderation/raidprotection.yml` | Join/message spike detection and temporary restrictions |
 
 ## Processing Pipeline
 
-When a player sends a chat message, it passes through this pipeline:
+Channel access, membership, mutes, slowmode, newcomer state, raid restrictions, and anti-bot checks can prevent a message before normal formatting and delivery. A successful chat-game answer may also be consumed by the game.
 
-1. **Slowmode Check** — Enforce channel slowmode
-2. **Raid Protection** — Check if raid mode restricts this player
-3. **Mute Check** — Block if player or channel is muted
-4. **Channel Permission** — Verify player can speak in this channel
-5. **Anti-Bot** — Check if player meets chat cooldown requirements
-6. **Chat Game** — Intercept message if a chat game is active
-7. **Moderation Filters** — Run the following filters in order:
-   - **Anti-Spam** — Check message delay and similarity
-   - **Anti-Advertising** — Check for URLs and IPs
-   - **Swear Filter** — Check for blocked words and patterns
-   - **Anti-Caps** — Check caps percentage
-   - **Cloud Filter** — Check against remote word lists
-   - **AI Filter** — Optional AI-powered content analysis (async)
+Within the normal moderation filter stage, the order is:
 
-If a message fails any filter, the configured action is taken (cancel, warn, censor, etc.). Infraction points are tracked inline when filter violations are detected.
+1. **Anti-Spam** — Check normal message delay and similarity.
+2. **Anti-Advertising** — Check URLs and IPs.
+3. **Swear Filter** — Cancel, warn, or censor local matches.
+4. **Anti-Caps** — Check the uppercase percentage.
+5. **Cloud Filter** — Censor matches from the separate cloud/local list.
+6. **AI Filter** — Submit optional analysis in the background.
+
+Earlier rejection stops the remaining filter stages. Accepted text can be displayed before an AI result. Private messages use the local swear filter when enabled, rather than every normal-chat filter. Content filtering skips chat anti-spam.
 
 ## Bypass Permissions
 
-Each filter has a bypass permission for staff:
-
 | Permission | Bypasses |
 |---|---|
-| `lpcpro.bypass.spam` | Anti-spam filter |
-| `lpcpro.bypass.caps` | Anti-caps filter |
-| `lpcpro.bypass.advertising` | Anti-advertising filter |
-| `lpcpro.bypass.filter` | Swear/profanity filter |
-| `lpcpro.bypass.grammar` | Auto grammar corrections |
+| `lpcpro.bypass.spam` | Normal anti-spam delay and similarity |
+| `lpcpro.bypass.cooldown.partial` | Reduces the normal delay, without removing similarity checks |
+| `lpcpro.bypass.caps` | Anti-caps |
+| `lpcpro.bypass.advertising` | Anti-advertising |
+| `lpcpro.bypass.filter` | Local swear filter |
+| `lpcpro.bypass.aifilter` | AI submission |
+| `lpcpro.bypass.grammar` | Grammar correction |
 | `lpcpro.bypass.mute` | Mute restrictions |
-| `lpcpro.slowmode.bypass` | Channel slowmode |
+| `lpcpro.slowmode.bypass` | Applicable slowmode delay |
+| `lpcpro.bypass.antibot` | Anti-bot checks |
+| `lpcpro.raidmode.bypass` | Raid restrictions |
+| `lpcpro.newcomer.bypass` | Newcomer policy |
 
-{% hint style="warning" %}
-The `bypass-moderation` group property in `advanced/groups.yml` is loaded from config but is **not currently checked** by the moderation pipeline. Use the individual bypass permissions above to grant filter bypass to staff.
-{% endhint %}
+The cloud filter is configured independently; the local swear-filter bypass does not disable it. Group fields such as `bypass-moderation` and `bypass-mute` do not replace the individual permissions above.
 
 ## Staff Spy
 
-Staff can monitor messages that were silently filtered:
+| Command | Permission | Description |
+|---|---|---|
+| `/spy` | `lpcpro.spy.pm` | Toggle private-message spying |
+| `/channelspy <channel>` | `lpcpro.spy.channel` | Toggle spying for that channel; no argument lists current status |
+| `/commandspy` | `lpcpro.spy.command` | Toggle command spying |
 
-| Permission | Description |
-|---|---|
-| `lpcpro.spy.silent` | See messages that were cancelled by filters (visible only to sender) |
-| `lpcpro.spy.pm` | See all private messages |
-| `lpcpro.spy.channel` | See messages in all channels |
+`lpcpro.spy.silent` allows the separate staff copy of silently cancelled messages. Spy access is sensitive: grant it only to trusted staff and review exclusions in `advanced/command-spy.yml`.
 
-## Message Deletion
+## Reload and Health
 
-With ProtocolLib installed, staff can delete individual messages from chat:
-
-| Permission | Description |
-|---|---|
-| `lpcpro.chat.delete` | Click the `[X]` button to delete any message |
-
-Messages are removed from the chat window of all players who received them.
+Use `/lpc reload` after editing feature files and `/lpc status` to check their health. Both require `lpcpro.admin`; reload also requires `lpcpro.command.reload`. Changes to top-level `enable-...` settings in `config.yml` require a restart. On Folia, individual message deletion, public replies, and inventory/shulker viewers are unavailable; range/same-world channels and chat bubbles also have restrictions.

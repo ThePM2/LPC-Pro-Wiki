@@ -1,6 +1,6 @@
 # 🔤 Placeholders
 
-LPC Pro provides two types of placeholders: **built-in placeholders** for use in chat format files, and **PlaceholderAPI placeholders** for use in other plugins.
+LPC Pro provides **built-in format placeholders** and its own **`%lpcpro_*%` placeholders**. Both work inside LPC Pro without PlaceholderAPI. Install PlaceholderAPI to use third-party expansions or resolve LPC Pro placeholders from other plugins.
 
 ## Built-in Placeholders
 
@@ -12,6 +12,7 @@ These placeholders work in chat format files (`formats/*.yml`) without any addit
 |---|---|
 | `{name}` | Player name (with nickname if set) |
 | `{player}` | Same as `{name}` |
+| `{sender_name}` | Effective sender name, also available in private-message formats |
 | `{nickname}` | Player's nickname (or real name if not set) |
 | `{displayname}` | Player's display name |
 | `{prefix}` | Rank prefix (from Vault/LuckPerms) |
@@ -24,6 +25,9 @@ These placeholders work in chat format files (`formats/*.yml`) without any addit
 | Placeholder | Description |
 |---|---|
 | `{message}` | The chat message content |
+| `{blank}` / `{empty}` | An empty text fragment |
+
+`<nl>` inserts a newline in a text/hover field. Built-in placeholders are context-specific: a tab list placeholder is not automatically a chat format placeholder.
 
 ### Private Message Placeholders
 
@@ -36,10 +40,10 @@ These placeholders work in chat format files (`formats/*.yml`) without any addit
 
 | Placeholder | File | Description |
 |---|---|---|
-| `{player}` | `servermessages.yml` | Player who joined/quit/died |
+| `{player}` | `features/servermessages.yml` | Player who joined/quit/died |
 | `{killer}` | Death messages | PvP killer name |
 | `{mob}` | Death messages | Mob name |
-| `{reason}` | Clear chat | Reason provided |
+| `{reason}` | Clear-chat message template | Reason provided |
 
 ### Tab List Placeholders
 
@@ -59,7 +63,9 @@ These placeholders work in chat format files (`formats/*.yml`) without any addit
 
 ## PlaceholderAPI Placeholders
 
-These placeholders require [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) and work both within LPC Pro formats and in other plugins (scoreboards, TAB, holograms, etc.).
+The LPC Pro expansion is registered automatically when [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) is installed and its hook is enabled. There is no separate LPC Pro eCloud download. LPC Pro also resolves its own placeholders internally when PlaceholderAPI is absent.
+
+Third-party placeholders such as `%player_name%` still need PlaceholderAPI and the matching expansion. Unrecognized placeholders are normally left visible; `strip-unresolved-placeholders: true` in `config.yml` removes unresolved `%word%` tokens from chat formats.
 
 ### LPC Pro Expansion
 
@@ -79,6 +85,25 @@ These placeholders require [PlaceholderAPI](https://www.spigotmc.org/resources/p
 | `%lpcpro_balance%` | Shop currency balance |
 | `%lpcpro_balance_formatted%` | Shop balance (formatted: 1.2K, 3.5M) |
 | `%lpcpro_chatting_days%` | Days since first message |
+| `%lpcpro_tag%` | Effective online chat tag, converted to legacy section-color codes |
+| `%lpcpro_tag_raw%` | Effective online tag as MiniMessage |
+| `%lpcpro_tag_plain%` | Effective online tag with formatting removed |
+| `%lpcpro_nickname%` | LPC nickname as legacy section-color text, or real name |
+| `%lpcpro_nickname_raw%` | Safe LPC nickname markup, or real name |
+| `%lpcpro_nickname_plain%` | LPC nickname with formatting removed, or real name |
+| `%lpcpro_settings_ready%` | `true` when the player's settings are loaded |
+| `%lpcpro_settings_controls_available%` | `true` when receiving controls are enabled and ready |
+| `%lpcpro_settings_public_chat%` | Stored public-chat preference: `true`, `false` or `unavailable` |
+| `%lpcpro_settings_games%` | Stored game-message preference: `true`, `false` or `unavailable` |
+| `%lpcpro_settings_pm%` | Private-message preference |
+| `%lpcpro_settings_dnd%` | DND preference (`true` means DND is on) |
+| `%lpcpro_settings_mentions%` | Mention preference |
+| `%lpcpro_settings_sounds%` | Sound preference |
+| `%lpcpro_settings_join%` | Join-message preference |
+| `%lpcpro_settings_quit%` | Quit-message preference |
+| `%lpcpro_settings_death%` | Death-message preference |
+
+Settings values report the saved preference, not proof that every kind of message is filtered. All settings preferences return `unavailable` while the player's settings are loading or unavailable. Tags and nicknames need an online player for their active cosmetic state; offline tags are empty and offline nicknames fall back to the real name. Balance is `0` for offline players. Other values can fall back to `0` or `?` when their backing feature is unavailable.
 
 ### Using in Chat Formats
 
@@ -109,3 +134,21 @@ player:
 | `%luckperms_primary_group_name%` | LuckPerms | Primary group |
 
 For the full list of available PlaceholderAPI placeholders, see the [PlaceholderAPI wiki](https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders).
+
+
+## Chat Sharing Variables
+
+Players type these into local channel chat; they are separate from format placeholders and PlaceholderAPI.
+
+| Variable | Description | Permission |
+|---|---|---|
+| `[item]` / `[i]` | Show the held item's tooltip; a shulker can open a frozen content preview | `lpcpro.variable.item` |
+| `[inv]` | Share a frozen inventory preview | `lpcpro.variable.inv` |
+| `[ender]` | Share a frozen personal ender chest preview | `lpcpro.variable.ender` |
+| `[coords]` | Share the current world and block coordinates with a copy action | `lpcpro.variable.coords` |
+
+Preview links are only usable by recipients to whom the message was delivered in the current session. Inventory, ender chest and shulker previews are read-only and expire; they do not expose a live inventory. These viewers are unavailable on Folia. Copy actions depend on client support; a Bedrock client does not offer the same clipboard action as Java.
+
+## Relational Placeholders
+
+On ordinary Paper/Spigot servers, chat formats can also resolve PlaceholderAPI relational placeholders against the sender and each recipient. Folia does not resolve these pairwise placeholders because another player's state may belong to a different region. Use sender-only or literal fallbacks for Folia formats.

@@ -10,9 +10,25 @@ Players can report others for inappropriate behavior. Reports are reviewed by st
 | `/reports` | View pending reports | `lpcpro.reports.view` |
 | `/reports list [status]` | List reports by status (pending/resolved/dismissed) | `lpcpro.reports.view` |
 | `/reports view <id>` | View report details | `lpcpro.reports.view` |
-| `/reports resolve <id> [note]` | Mark a report as resolved | `lpcpro.reports.manage` |
-| `/reports dismiss <id> [note]` | Dismiss a report | `lpcpro.reports.manage` |
+| `/reports resolve <id> [note]` | Mark a report as resolved | `lpcpro.reports.view` + `lpcpro.reports.manage` |
+| `/reports dismiss <id> [note]` | Dismiss a report | `lpcpro.reports.view` + `lpcpro.reports.manage` |
 | `/reports player <name>` | View reports against a player | `lpcpro.reports.view` |
+
+## Configuration
+
+The generated `moderation/reports.yml` defaults are:
+
+```yaml
+enabled: true
+rate-limit:
+  max-reports: 5
+  period-minutes: 60
+max-cached-messages: 10
+notify-staff-on-join: true
+allow-self-report: false
+```
+
+The recent-message cache provides context; a report is not a copy of the player's entire history. Commands are in-game actions.
 
 ## How It Works
 
@@ -23,16 +39,19 @@ Players can report others for inappropriate behavior. Reports are reviewed by st
 
 ## Chat Integration
 
-Reports can also be submitted by clicking on a message in chat. The default chat format includes a hover tooltip on messages:
+A format can suggest the report command when a player clicks a message. For example:
 
 ```yaml
 message:
   text: "&f{message}"
-  hover: "&eClick to report {name}'s message!"
+  hover:
+    - "<yellow>Click to report {name}'s message!"
   suggest: "/report {name} "
 ```
 
 This pre-fills the report command when a player clicks on any message, making reporting quick and intuitive.
+
+Connected Bedrock players can also report captured delivered context from `/chatmenu`. That action is checked against the retained source and the current connection.
 
 ## Permissions
 

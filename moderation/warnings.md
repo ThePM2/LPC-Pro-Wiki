@@ -1,6 +1,6 @@
 # ⚠️ Warnings
 
-The warning system lets staff issue formal warnings to players. Warnings accumulate and can trigger automatic actions (mute, kick, ban) at configurable thresholds.
+Staff can issue formal warnings with points and review them later. Manual warnings are stored in the database and are separate from the automatic [infraction system](infractions.md).
 
 ## Commands
 
@@ -8,39 +8,44 @@ The warning system lets staff issue formal warnings to players. Warnings accumul
 
 | Command | Description | Permission |
 |---|---|---|
-| `/warn <player> [points] <reason>` | Issue a warning (points default to 1) | `lpcpro.warn` |
+| `/warn <player> [points] <reason>` | Issue a warning; points default to one | `lpcpro.warn` |
+
+```text
+/warn Steve Please keep chat respectful
+/warn Steve 2 Repeated advertising
+```
 
 ### Warnings Command
 
-The `/warnings` command (alias: `/warns`) handles viewing and managing warnings:
+The `/warnings` command has the alias `/warns`:
 
-| Command | Description | Permission |
+| Command | Description | Additional Permission |
 |---|---|---|
-| `/warnings` | View your own warnings | `lpcpro.warn.view` |
-| `/warnings <player>` | View a player's warnings | `lpcpro.warn.view` |
-| `/warnings remove <player> #<n>` | Remove a specific warning by number | `lpcpro.warn.remove` |
-| `/warnings clear <player>` | Clear all warnings for a player | `lpcpro.warn.clear` |
-| `/warnings top` | Show players with the most warnings | `lpcpro.warn.view` |
+| `/warnings` | View your own warnings | — |
+| `/warnings <player>` | View a player's warnings | — |
+| `/warnings remove <player> #<n>` | Remove the displayed warning number | `lpcpro.warn.remove` |
+| `/warnings clear <player>` | Clear a player's warnings | `lpcpro.warn.clear` |
+| `/warnings top` | Show the warning leaderboard | — |
+
+All `/warnings` actions require `lpcpro.warn.view`. They are in-game commands; `/warn` also accepts a console sender.
 
 ## Automatic Threshold Actions
 
-When a player accumulates enough warnings, automatic actions can be triggered. These are configured alongside your warning policy.
+The current manual-warning manager uses these built-in defaults:
 
-Common threshold configuration:
-
-| Warnings | Action |
+| Active Warning Points | Action |
 |---|---|
-| 3 | Temporary mute (30 minutes) |
 | 5 | Kick |
-| 7 | Temporary ban (1 day) |
 | 10 | Permanent ban |
+
+These thresholds are separate from `infractions.thresholds` in `moderation/moderation.yml`. There is no documented YAML setting for customizing the manual-warning thresholds. `lpcpro.warn.bypass` protects an online target from the applicable warning/threshold handling.
 
 ## Permissions
 
 | Permission | Default | Description |
 |---|---|---|
 | `lpcpro.warn` | `op` | Issue warnings |
-| `lpcpro.warn.view` | `op` | View another player's warnings |
+| `lpcpro.warn.view` | `op` | View and manage warning lists |
 | `lpcpro.warn.remove` | `op` | Remove individual warnings |
-| `lpcpro.warn.clear` | `op` | Clear all warnings for a player |
-| `lpcpro.warn.bypass` | `op` | Bypass warning threshold actions (kick/ban) |
+| `lpcpro.warn.clear` | `op` | Clear warnings |
+| `lpcpro.warn.bypass` | `op` | Warning bypass for the applicable target checks |

@@ -4,6 +4,8 @@ The console filter suppresses unwanted messages from the server console output. 
 
 ## Configuration
 
+This is an example with empty filter lists. The generated file contains sample entries, but filtering is disabled by default. Review all entries before enabling it.
+
 ```yaml
 enabled: false
 
@@ -50,3 +52,7 @@ filters:
 ## How It Works
 
 The console filter integrates with Log4j to intercept and suppress matching log messages. Because it operates as a Log4j filter on the root logger, filtered messages may also be suppressed from log files.
+
+## Applying Changes
+
+Use `/lpc reload` after editing. An invalid regex is reported in the log. Keep the filter narrow so storage, moderation, and startup failures remain visible. This changes console/log output, not what players are allowed to say.

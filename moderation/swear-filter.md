@@ -37,12 +37,13 @@ swear-filter:
 For every word in the `blocked-words` list, the filter automatically detects:
 
 - **Exact matches** — `word`
-- **Leet speak** — `w0rd`, `w@rd`, `w()rd`
+- **Leet speak** — common configured substitutions such as `w0rd`
 - **Repeated characters** — `wooord`, `worrrd`
 - **Separator characters** — `w-o-r-d`, `w.o.r.d`, `w_o_r_d`
 - **Combinations** — `w0.0.r-d`
+- **Unicode variants** — canonicalization of supported look-alike/styled characters and selected invisible characters
 
-You only need to add the base word — evasion detection is automatic.
+Add the base word for automatic common-evasion handling. Detection is not a guarantee against every language or possible spelling. The example word list above is illustrative; the generated file contains the built-in list. Keep your existing words when adding another rule.
 
 ### Regex Patterns
 
@@ -79,3 +80,7 @@ Set `filter-private-messages: true` to also filter `/msg` content through the sw
 ## Bypass
 
 **Permission:** `lpcpro.bypass.filter` (default: `op`)
+
+This bypass applies to the local swear filter. The [cloud filter](cloud-filter.md) is independent. Three tracked local violations within two minutes can add a [swear-filter infraction](infractions.md); the manual warning system is separate.
+
+Use `/lpc reload` after editing the list or actions.

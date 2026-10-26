@@ -1,94 +1,74 @@
 # 💜 Discord Integration
 
-LPC Pro can bridge chat between your Minecraft server and Discord channels using webhooks and/or DiscordSRV. Configuration is in `integration/discord.yml`.
+LPC Pro can relay chat between Minecraft and Discord using webhooks and/or DiscordSRV. Configuration is in `integration/discord.yml`.
 
 ## Setup
 
 ### Step 1: Enable the Integration
 
-```yaml
-enabled: true
-```
+Keep `enable-discord: true` in the main `config.yml` and set `enabled: true` in `integration/discord.yml`. The main switch requires a restart if changed; the integration file supports `/lpc reload`.
 
-### Step 2: Create a Discord Webhook
+### Step 2: Choose a Relay Mode
 
-1. Open your Discord server settings
-2. Go to **Integrations** > **Webhooks**
-3. Click **New Webhook**
-4. Choose the channel where Minecraft messages should appear
-5. Copy the webhook URL
+| `relay-mode` | Minecraft to Discord |
+|---|---|
+| `auto` | Use a valid channel webhook; otherwise try the legacy DiscordSRV fallback described below |
+| `webhook` | Use the configured channel webhook |
+| `discordsrv` | Let DiscordSRV handle delivery and its own formatting/avatar pipeline |
+
+The default is `auto`. Webhooks use the configured single bot name/avatar, rather than automatically giving each player a separate avatar.
 
 ### Step 3: Configure Channel Mapping
 
-Map your LPC Pro channels to Discord channels:
+For webhook delivery, create a webhook for your Discord channel and copy its URL into the matching LPC channel. Keep its token private.
 
 ```yaml
+enabled: true
+use-discordsrv: true
+relay-mode: "auto"
+bot-name: "LPC Pro"
+avatar-url: ""
+
 channels:
   global:
-    webhook-url: "https://discord.com/api/webhooks/YOUR_ID/YOUR_TOKEN"
-    discord-channel-id: "YOUR_CHANNEL_ID"
+    webhook-url: "https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN"
+    discord-channel-id: "YOUR_DISCORD_CHANNEL_ID"
     send-to-discord: true
     receive-from-discord: true
     format-to-discord: "{player}: {message}"
     format-from-discord: "<blue>[Discord]</blue> <white>{username}</white>: <gray>{message}</gray>"
 ```
 
-## Configuration Reference
-
-```yaml
-enabled: false
-use-discordsrv: true           # Use DiscordSRV for receiving messages
-bot-name: "LPC Pro"            # Bot display name for webhooks
-avatar-url: ""                 # Bot avatar URL for webhooks
-
-channels:
-  global:
-    webhook-url: "https://discord.com/api/webhooks/..."
-    discord-channel-id: "123456789"
-    send-to-discord: true       # Send MC messages to Discord
-    receive-from-discord: true  # Receive Discord messages in MC
-    format-to-discord: "{player}: {message}"
-    format-from-discord: "<blue>[Discord]</blue> <white>{username}</white>: <gray>{message}</gray>"
-```
-
-### Settings
-
-| Setting | Type | Description |
-|---|---|---|
-| `webhook-url` | string | Discord webhook URL for sending messages |
-| `discord-channel-id` | string | Discord channel ID (for receiving via DiscordSRV) |
-| `send-to-discord` | boolean | Forward Minecraft messages to Discord |
-| `receive-from-discord` | boolean | Forward Discord messages to Minecraft |
-| `format-to-discord` | string | Message format sent to Discord |
-| `format-from-discord` | string | Message format shown in Minecraft (MiniMessage) |
-
-### Placeholders
-
-**To Discord:** `{player}`, `{message}`
-
-**From Discord:** `{username}`, `{message}`
+Replace the placeholders with your own values. The generated file has `enabled: false`; this example enables it. `global` must be a real LPC channel. After reloading, check `/lpc status` and test each intended direction.
 
 ## DiscordSRV
 
-If you have [DiscordSRV](https://www.spigotmc.org/resources/discordsrv.18494/) installed, LPC Pro can use it to receive messages from Discord. Set `use-discordsrv: true` and configure the `discord-channel-id` for each channel mapping.
+DiscordSRV is needed for receiving Discord chat; webhooks alone only send Minecraft messages out.
 
-Without DiscordSRV, only sending to Discord (via webhooks) is supported.
+In `auto` mode with a webhook, set `use-discordsrv: true` and the numeric `discord-channel-id` for receiving. The webhook handles sending in this setup.
 
-## Multiple Channels
+The legacy `auto` send fallback uses the same `discord-channel-id` field as a **DiscordSRV game-channel name**, rather than looking up a numeric Discord channel ID. Setting a numeric ID for inbound matching therefore does not guarantee outbound delivery when the webhook is empty. For a two-way setup, use the webhook plus numeric inbound mapping above, or select the dedicated `discordsrv` mode below.
 
-You can map multiple LPC Pro channels to different Discord channels:
+With `relay-mode: "discordsrv"`, match LPC channel names to DiscordSRV game-channel names (`global` is the usual starting point). DiscordSRV owns its delivery pipeline, including inbound messages; LPC does not add a second copy. The LPC webhook URL is ignored in this mode. You do not need to change DiscordSRV's `RespectChatPlugins` to use this path.
 
-```yaml
-channels:
-  global:
-    webhook-url: "https://discord.com/api/webhooks/global-webhook..."
-    discord-channel-id: "111111111"
-    send-to-discord: true
-    receive-from-discord: true
+## Configuration Reference
 
-  staff:
-    webhook-url: "https://discord.com/api/webhooks/staff-webhook..."
-    discord-channel-id: "222222222"
-    send-to-discord: true
-    receive-from-discord: true
-```
+| Setting | Default | Description |
+|---|---|---|
+| `enabled` | `false` | Enable this integration |
+| `use-discordsrv` | `true` | Allow the DiscordSRV integration |
+| `relay-mode` | `auto` | Select sending behavior |
+| `bot-name` | `LPC Pro` | Webhook display name |
+| `avatar-url` | empty | Webhook avatar URL |
+| `send-to-discord` | `true` | Forward this mapped channel outward |
+| `receive-from-discord` | `true` | Allow this mapped channel's inbound path |
+
+**To Discord:** `{player}`, `{message}`. **From Discord:** `{username}`, `{message}`.
+
+Add another entry under `channels` for each additional mapping. A private staff destination still needs the appropriate channel permissions; an unknown LPC channel is not accepted as a destination.
+
+## Delivery Limits
+
+Webhook posts use a bounded queue of 500 pending messages, with up to five retries for rate limits, server errors, and connection failures. Retry headers are honored. Overflow and final failures appear in logs/status.
+
+Pending webhook posts are discarded with a warning on reload/shutdown; the queue is not durable. A failed connection after Discord accepted a post can produce a duplicate on retry. Content is truncated to Discord's 2,000-character limit, and webhook notification mentions are disabled. Provider availability and production DiscordSRV behavior should be checked with your actual versions.

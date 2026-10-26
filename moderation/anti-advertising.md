@@ -52,8 +52,11 @@ allowed-domains:
 | Action | Description |
 |---|---|
 | `CANCEL` | Block the message |
+| `SILENT_CANCEL` | Show a local sender copy while hiding it from normal recipients |
 | `WARN` | Send the player a warning |
 
 ## Bypass
 
 **Permission:** `lpcpro.bypass.advertising` (default: `op`)
+
+Allowed-domain examples are policy choices: allowing `discord.gg`, for example, allows that domain rather than only one server invite. Reload with `/lpc reload` and test both an allowed domain and an unrelated blocked domain. This normal/content filter is not applied to every private message.

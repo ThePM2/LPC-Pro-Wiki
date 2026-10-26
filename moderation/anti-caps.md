@@ -29,7 +29,7 @@ anti-caps:
 
 **Example** with default settings (70% threshold, 5 char minimum):
 - `HELLO EVERYONE` — 100% caps, exceeds 70% → action taken
-- `Hello EVERYONE` — ~57% caps, below 70% → allowed
+- `Hello everyone` — one uppercase letter, below 70% → allowed
 - `HI` — Only 2 characters, below minimum length → ignored
 
 ## Actions
@@ -38,8 +38,10 @@ anti-caps:
 |---|---|
 | `CANCEL` | Block the message entirely |
 | `WARN` | Send a warning but allow the message |
-| `LOWERCASE` | Automatically convert the message to lowercase (default) |
+| `LOWERCASE` | Lowercase excessive capitals while retaining sentence starts (default) |
 
 ## Bypass
 
 **Permission:** `lpcpro.bypass.caps` (default: `op`)
+
+The percentage uses letters rather than spaces or punctuation. Use `/lpc reload` after changing the settings.

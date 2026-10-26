@@ -7,6 +7,7 @@
 * [📋 Requirements](getting-started/requirements.md)
 * [💾 Installation](getting-started/installation.md)
 * [🔧 Initial Setup](getting-started/initial-setup.md)
+* [🔄 Updating & Recovery](getting-started/updating.md)
 
 ## ⚙️ Configuration
 
@@ -19,12 +20,20 @@
 * [📣 Smart Announcements](configuration/smart-announcements.md)
 * [👋 MOTD](configuration/motd.md)
 * [🖥️ Console Filter](configuration/console-filter.md)
+* [⌨️ Command Customization](configuration/command-customization.md)
 
 ## ⭐ Features
 
 * [📺 Chat Channels](features/chat-channels.md)
 * [🎨 Chat Formatting & Colors](features/chat-formatting.md)
+* [🖌️ Chat Style Editor](features/chat-style-editor.md)
+* [💾 Player Style Profiles](features/player-style-profiles.md)
+* [🎒 Inventory Sharing](features/inventory-sharing.md)
+* [📍 Coordinates](features/coordinates.md)
+* [⚙️ Chat Settings](features/chat-settings.md)
+* [↪️ Public Replies](features/public-replies.md)
 * [📌 Mentions](features/mentions.md)
+* [🔔 Mention Sounds](features/mention-sounds.md)
 * [✉️ Private Messages](features/private-messages.md)
 * [📬 Mail System](features/mail-system.md)
 * [📥 Offline Messages](features/offline-messages.md)
@@ -46,6 +55,8 @@
 
 * [🛡️ Moderation Overview](moderation/overview.md)
 * [⏱️ Anti-Spam](moderation/anti-spam.md)
+* [🐢 Slowmode](moderation/slowmode.md)
+* [🗑️ Message Deletion](moderation/message-deletion.md)
 * [🔠 Anti-Caps](moderation/anti-caps.md)
 * [🚫 Anti-Advertising](moderation/anti-advertising.md)
 * [🤬 Swear Filter](moderation/swear-filter.md)
@@ -70,6 +81,7 @@
 * [📡 ProtocolLib](integrations/protocollib.md)
 * [🖼️ ItemsAdder](integrations/itemsadder.md)
 * [⛏️ Oraxen](integrations/oraxen.md)
+* [🔷 Nexo](integrations/nexo.md)
 * [🌉 Geyser & Floodgate](integrations/geyser.md)
 * [🔀 ViaVersion](integrations/viaversion.md)
 * [🌐 Proxy / Network](integrations/proxy.md)

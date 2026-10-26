@@ -2,6 +2,8 @@
 
 Chat formats control how messages appear in chat. Each format is a YAML file in the `formats/` folder, composed of **parts** — individual text segments with their own hover tooltips and click actions.
 
+For an in-game alternative, use the [Chat Style Editor](../features/chat-style-editor.md) for a six-design gallery, private previews, explicit save, and previous-format restoration.
+
 ## Format Files
 
 | File | Purpose |
@@ -11,6 +13,12 @@ Chat formats control how messages appear in chat. Each format is a YAML file in 
 | `formats/msg-receiver.yml` | Private message format (receiver side) |
 | `formats/staff-chat.yml` | Staff channel format |
 | `formats/groups/*.yml` | Group-specific format overrides |
+
+## Format Selection
+
+For channel chat, the resolver tries an available explicit channel format other than the `chat.yml` fallback marker, then the player's primary-group format when `use-group-formats: true`, then `chat`. `/lpc diagnose [player] [channel]` shows the actual selection.
+
+Format IDs use a lower-case file basename, such as `chat` or `vip`. Keep basenames unique across `formats/` and its group files; do not create two different layouts named `vip.yml`.
 
 ## Structure
 
@@ -60,7 +68,7 @@ hover:
 
 ### Click Actions
 
-Only **one** click action per part (first match wins):
+Only **one** click action per part is used. A valid generic `click` takes precedence; otherwise the first available shorthand is used in this order: `suggest`, `run`, `open`, then `copy`. Configure one action to keep the result clear.
 
 | Property | Action | Example |
 |---|---|---|
@@ -112,14 +120,14 @@ LPC Pro supports multiple color and formatting syntaxes:
 
 ## Group-Specific Formats
 
-You can create format overrides per group by placing files in `formats/groups/`. The file name must match the player's LuckPerms/Vault primary group name:
+You can create format overrides per group by placing files in `formats/groups/`. With `use-group-formats: true` (the default), the lower-case file basename must match the player's LuckPerms/Vault primary group name:
 
 ```
 formats/groups/owner.yml   → Used for owner group
 formats/groups/vip.yml     → Used for vip group
 ```
 
-If no group-specific format exists, the default `formats/chat.yml` is used.
+An available explicit channel format takes precedence. Otherwise, a matching group file is used, with `formats/chat.yml` as the fallback. Set `use-group-formats: false` and reload to ignore group files. This is independent of `advanced/groups.yml` detection settings.
 
 ## Private Message Formats
 
@@ -146,3 +154,11 @@ msg:
     - "<#6cc324>Click to reply!"
   suggest: "/msg {receiver_name} "
 ```
+
+## Applying Changes
+
+Back up manual edits and run `/lpc reload`. A saved personal chat color can override the base message color; changing the format does not erase that choice. Newcomer badges are added separately when enabled. Use [style profiles](../features/player-style-profiles.md) for personal combinations rather than creating server format files per player.
+
+Formatting in an owner-controlled template is separate from permission to insert formatting into a player's message. See [Chat Formatting & Colors](../features/chat-formatting.md). Shared inventory and coordinate tokens activate only through their supported channel message paths, not by placing them in a prefix or hover.
+
+For integrations, [PlaceholderAPI](../integrations/placeholderapi.md) expansions and [ItemsAdder](../integrations/itemsadder.md), [Oraxen](../integrations/oraxen.md), or [Nexo](../integrations/nexo.md) glyphs require their own providers. Folia's shared rendering path does not resolve relational placeholders.

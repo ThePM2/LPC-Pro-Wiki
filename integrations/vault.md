@@ -1,33 +1,27 @@
 # 🏦 Vault
 
-LPC Pro integrates with [Vault](https://www.spigotmc.org/resources/vault.34315/) for economy and permission abstraction.
-
-## What It Enables
-
-- **Group Detection** — Alternative to LuckPerms for determining player groups
-- **Prefixes/Suffixes** — Fetch rank prefixes through Vault's chat API
-- **Economy** — Display balance information in chat formats
+Vault connects LPC Pro to installed permission/chat and economy providers. Vault alone does not supply an economy or rank data.
 
 ## Setup
 
-1. Install Vault and an economy plugin (e.g., EssentialsX, CMI) on your server
-2. LPC Pro automatically detects Vault
-
-## Group Detection
-
-If you prefer Vault over LuckPerms, set the detection mode in `advanced/groups.yml`:
+1. Install Vault and the permission/chat or economy provider you actually need.
+2. Restart and check the detected provider in the startup log.
+3. For group selection through Vault, use `detection-mode: "VAULT_GROUP"` in `advanced/groups.yml`.
 
 ```yaml
 detection-mode: "VAULT_GROUP"
 ```
 
+The provider must expose the relevant Vault service. A missing provider cannot be fixed by adding a placeholder or changing a player's balance in LPC's internal store.
+
+## Shop Economy
+
+`features/shop.yml` can use `currency-mode: "vault"` instead of the default internal `"points"`. Purchases withdraw the exact configured price, preserving a provider's fractional balance.
+
+Uncertain provider transactions are recorded for recovery rather than blindly charged again. See [Chat Shop](../features/chat-shop.md) before resolving a pending purchase. Do not switch currency types as a substitute for migrating balances; the stores are distinct.
+
+On Folia, your chosen economy and commands must themselves support the required scheduling. LPC's Vault adapter does not certify every production provider.
+
 ## Placeholders
 
-With Vault and PlaceholderAPI installed:
-
-| Placeholder | Description |
-|---|---|
-| `%vault_prefix%` | Player's prefix via Vault |
-| `%vault_suffix%` | Player's suffix via Vault |
-| `%vault_eco_balance%` | Player's economy balance |
-| `%vault_eco_balance_formatted%` | Formatted balance |
+With PlaceholderAPI's Vault expansion and the relevant provider installed, values such as `%vault_prefix%`, `%vault_suffix%`, `%vault_eco_balance%`, and `%vault_eco_balance_formatted%` can be used. Install the expansion separately; Vault by itself does not register those PAPI values.
