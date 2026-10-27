@@ -62,7 +62,11 @@ The `{tag}` placeholder includes a leading space when set, so formatting remains
 
 Definitions live in `chat/tags.yml`. `enable-tags: false` in `config.yml` disables tag rendering and its command, including manual and automatic tags. That main switch requires a restart; reload tag definitions with `/lpc reload`.
 
-The `/tags` command needs `lpcpro.tags`, which is not explicitly defaulted to all players in the plugin descriptor. Grant it to the intended group. A tag itself can be available through its configured permission, an earned achievement reward or an owned shop unlock. Menu selection and applying a saved style profile check current access. A tag already equipped in ordinary player settings is not automatically cleared when a permission is removed; use the menu's reset action if you need to remove that selection.
+The `/tags` command needs `lpcpro.tags`, which is not explicitly defaulted to all players in the plugin descriptor. Grant it to the intended group. A tag itself can be available through its configured permission, an earned achievement reward or an owned shop unlock. Menu selection, applying a saved style profile and normal chat rendering check current access.
+
+If a selected tag is removed from the catalog or its permission/unlock is no longer available, it stops appearing. The player's current auto-tag is used instead, or no tag if none applies. The saved manual choice is kept, so it can return when access is restored; use the menu's reset action to clear it deliberately.
+
+Rendering uses already loaded achievement and shop ownership state without starting a database read. If that state is not available yet, it does not assume that the reward is unlocked. Confirmed shop ownership can still provide a tag without access to the general tag menu, including an owned offer that has been disabled for new purchases.
 
 ```text
 /lp group default permission set lpcpro.tags true

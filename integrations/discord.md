@@ -12,7 +12,7 @@ Keep `enable-discord: true` in the main `config.yml` and set `enabled: true` in 
 
 | `relay-mode` | Minecraft to Discord |
 |---|---|
-| `auto` | Use a valid channel webhook; otherwise try the legacy DiscordSRV fallback described below |
+| `auto` | Use a valid channel webhook; otherwise use the configured DiscordSRV destination when its lookup API is available |
 | `webhook` | Use the configured channel webhook |
 | `discordsrv` | Let DiscordSRV handle delivery and its own formatting/avatar pipeline |
 
@@ -47,9 +47,13 @@ DiscordSRV is needed for receiving Discord chat; webhooks alone only send Minecr
 
 In `auto` mode with a webhook, set `use-discordsrv: true` and the numeric `discord-channel-id` for receiving. The webhook handles sending in this setup.
 
-The legacy `auto` send fallback uses the same `discord-channel-id` field as a **DiscordSRV game-channel name**, rather than looking up a numeric Discord channel ID. Setting a numeric ID for inbound matching therefore does not guarantee outbound delivery when the webhook is empty. For a two-way setup, use the webhook plus numeric inbound mapping above, or select the dedicated `discordsrv` mode below.
+To use the `auto` send fallback, leave `webhook-url: ""`, keep `use-discordsrv: true` and set `discord-channel-id` to your actual numeric Discord channel ID. LPC looks it up through DiscordSRV's numeric channel API, so the same ID can be used for inbound matching. The destination must exist and be available to the bot; an unknown ID is not redirected to another channel.
+
+Existing nonnumeric DiscordSRV **game-channel names** remain supported for outbound fallback. They do not replace the numeric ID needed to match an incoming Discord channel. If an older provider lacks the numeric lookup API, numeric AUTO sending is unavailable; compatible legacy game-channel and native relay paths remain separate options. A valid webhook still takes priority in AUTO, and `webhook` mode never switches to DiscordSRV fallback.
 
 With `relay-mode: "discordsrv"`, match LPC channel names to DiscordSRV game-channel names (`global` is the usual starting point). DiscordSRV owns its delivery pipeline, including inbound messages; LPC does not add a second copy. The LPC webhook URL is ignored in this mode. You do not need to change DiscordSRV's `RespectChatPlugins` to use this path.
+
+Reloading or disabling the integration retires pending LPC receive callbacks from the previous configuration. Switching to native `discordsrv` mode leaves inbound delivery with DiscordSRV, including when an old LPC callback arrives late.
 
 ## Configuration Reference
 

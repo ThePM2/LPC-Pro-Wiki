@@ -101,7 +101,9 @@ These commands require both `lpcpro.admin` and `lpcpro.ai.review`. A high senten
 
 The default global limit is 30 requests per minute, with a separate limit of five per player and one outstanding request per player. Two calls can run while 64 wait. Responses are limited to 256 KiB, and identical results are cached for 30 minutes by default. `/lpc status` shows the active backend/mode and health counters.
 
-`log-analysis: false` hides full message content in the AI analysis log/alert path and AI infraction reasons. It does not disable separate logging: a successful automatic deletion still writes the original message to the server log, and configured chat history has its own policy. Use Observe mode or disable `post-hoc-moderation.auto-delete-messages` if that deletion-log behavior is unsuitable for your setup.
+`log-analysis: false` hides full message content in the AI analysis log/alert path and AI infraction reasons. AI-triggered automatic deletion follows the same captured logging choice: its log keeps the message ID, sender and a content-hidden notice, without the message body or free-form reason. With `true`, that deletion log can include the original text and reason.
+
+This setting does not disable independent logging. Manual staff deletion logs and configured chat history have their own behavior and retention. Review [Chat History](../features/chat-history.md) when choosing what your server stores.
 
 An enabled provider still receives the analyzed text. Keep API keys private. Players with `lpcpro.bypass.aifilter` skip this analysis path. Normal chat and enabled sign/book/anvil filtering can submit analysis; private messages use the local swear filter rather than this AI path.
 

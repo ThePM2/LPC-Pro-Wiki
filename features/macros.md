@@ -31,7 +31,7 @@ Macros support these variables:
 
 ## Default Macros
 
-LPC Pro ships with these built-in global macros:
+LPC Pro adds these built-in global macros when creating a missing `features/macros.yml` for the first time:
 
 | Macro | Purpose |
 |---|---|
@@ -67,4 +67,17 @@ global:
 
 Run `/lpc reload` after editing the file. `/macro set event Meet at spawn!` saves a global entry from in-game; it needs both `lpcpro.macro` and `lpcpro.macro.admin`. PlaceholderAPI, when installed, resolves against the sender. Replace the shipped example Discord link before using `/macro discord` on your server.
 
-`/macro remove` removes the entry from the running macro list. The current save routine retains old YAML entries, so remove a custom entry from the file as well if it must stay gone after reload. Shipped default macros are recreated on reload; restrict command access if you do not want players to use them.
+`/macro set` and `/macro remove` confirm success after the changed global list has been saved. Removed entries stay removed after reloads and restarts, including shipped default macros. An existing empty file or `global: {}` does not recreate the defaults.
+
+For example:
+
+```text
+/macro set event Meet at spawn!
+/macro remove event
+/lpc reload
+/macro list
+```
+
+The removed `event` entry remains absent. Global names are case-insensitive; removing a name also removes any differently capitalized copies of that name from the file. Existing spelling and additional fields on retained entries are preserved. If a file contains duplicate names that differ only by case, the last entry in file order is the active one.
+
+If saving fails, the command reports an error and keeps the previous running macros. A failed configuration reload also keeps the last working list. Check storage access and the server log before retrying.

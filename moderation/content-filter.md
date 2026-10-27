@@ -15,10 +15,10 @@ block-on-filter: true
 
 | Content | Behavior |
 |---|---|
-| Signs and anvil names | With `block-on-filter: true`, reject a cancellation result. A normal censoring/modification result is kept as replacement text, even with this setting enabled. |
+| Signs and anvil names | Always reject a cancellation without replacement text. With `block-on-filter: true`, reject cancellation results even when a replacement is supplied; with `false`, use that replacement. A normal non-cancelled censoring/modification result is kept with either setting. |
 | Book pages and signed titles | With `block-on-filter: true`, reject either a cancellation or a text change. With `false`, use replacement text, but still reject a cancellation that has no replacement. |
 
-With `block-on-filter: false`, signs and anvils do not have the same cancellation-without-replacement protection as books. A cancellation-only rule may leave a sign's original text or clear an anvil name instead of producing censored text. Keep `block-on-filter: true` when cancellation rules must reject those edits. Test your selected actions on each content type before using a permissive configuration.
+Setting `block-on-filter: false` allows a usable replacement; it does not allow an uncensorable cancellation through. A rejected sign edit is cancelled, and a rejected anvil rename has no result to take. The setting remains `true` by default. Test your selected actions on each content type when changing the policy.
 
 ## What Gets Filtered
 
